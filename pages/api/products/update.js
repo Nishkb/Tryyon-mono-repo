@@ -36,7 +36,8 @@ const schema = {
         type: Joi.string().allow('commission', 'discount').required(),
         commission: Joi.number().optional().min(0).max(100),
         discount: Joi.number().optional().min(0).max(100)
-      }).optional()
+      }).optional(),
+      images: Joi.array().optional()
     })
   })
 };

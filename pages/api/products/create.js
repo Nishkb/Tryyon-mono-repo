@@ -33,7 +33,8 @@ const schema = {
       type: Joi.string().allow('commission', 'discount').optional(),
       commission: Joi.number().optional().min(0).max(100),
       discount: Joi.number().optional().min(0).max(100)
-    }).required()
+    }).required(),
+    images: Joi.array().required()
   })
 };
 

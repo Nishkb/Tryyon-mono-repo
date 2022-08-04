@@ -254,7 +254,8 @@ export const searchProducts = async ({
       featuredTo: 1,
       guestCheckout: 1,
       private_product: 1,
-      marketPlace: 1
+      marketPlace: 1,
+      images: 1
     }
   });
 
