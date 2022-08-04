@@ -1,6 +1,7 @@
 import {
   Button,
   Flex,
+  Image,
   Table,
   Tbody,
   Td,
@@ -39,7 +40,8 @@ export default function TableComp(props) {
     deleteEntry,
     actions,
     actionButtons,
-    restore_page
+    restore_page,
+    openGallery
   } = props;
 
   const columns = useMemo(() => columnsData, [columnsData]);
@@ -148,7 +150,23 @@ export default function TableComp(props) {
                     let data = '';
                     columns.forEach((col) => {
                       if (cell.column.Header === col.Header) {
-                        if (Array.isArray(cell.value)) {
+                        if (
+                          cell.column.Header.toLowerCase().includes('image')
+                        ) {
+                          data = (
+                            <Flex
+                              align="center"
+                              onClick={() => openGallery(cell)}
+                              cursor="pointer"
+                            >
+                              <Image
+                                src={cell.value[0]}
+                                alt="Product Image"
+                                maxW="100px"
+                              />
+                            </Flex>
+                          );
+                        } else if (Array.isArray(cell.value)) {
                           let internal_data = cell.value.map((val, index) => (
                             <Flex
                               key={index}

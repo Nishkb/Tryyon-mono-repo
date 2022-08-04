@@ -21,7 +21,8 @@ import {
   FormErrorMessage,
   CheckboxGroup,
   Checkbox,
-  Switch
+  Switch,
+  Image
 } from '@chakra-ui/react';
 
 import { DownloadIcon } from '@chakra-ui/icons';
@@ -30,6 +31,7 @@ import { SearchBar } from '../../ui/components/searchbar';
 import useDebounce from '../../utils/hooks/useDebounce';
 import Facet from '../../ui/components/facet';
 import { Field, Formik } from 'formik';
+import GalleryComp from '../../ui/components/gallery';
 
 const columnsData = [
   {
@@ -115,6 +117,10 @@ const columnsData = [
   {
     Header: 'DISCOUNT',
     accessor: 'reseller.discount'
+  },
+  {
+    Header: 'FEATURE IMAGE',
+    accessor: 'images'
   }
 ];
 
@@ -128,6 +134,8 @@ export default function UserProducts() {
   const [priceFrom, setPriceFrom] = useState(0);
   const [priceTo, setPriceTo] = useState(0);
   const [skus, setSKUs] = useState([]);
+
+  const [galleryCell, setGalleryCell] = useState({});
 
   const debouncedSearchString = useDebounce(searchString, 1500);
   const debouncedCategoryQuery = useDebounce(categoryQuery, 1500);
@@ -259,7 +267,7 @@ export default function UserProducts() {
           throw new Error(res_data.message);
         })
         .then((res) => {
-          setData(res.products);
+          setData([...res.products]);
         })
         .catch((err) => {
           console.log(err);
@@ -403,12 +411,18 @@ export default function UserProducts() {
           columnsData={columnsData}
           tableData={data}
           restore_page={page}
+          openGallery={(cell) => {
+            setGalleryCell(cell);
+            setModalHeader('Product Gallery');
+            setModalBody('gallery');
+            onOpen();
+          }}
         />
       </Layout>
       {isOpen && (
         <Modal
           scrollBehavior="inside"
-          size={'md'}
+          size={modalBody == 'gallery' ? '5xl' : 'md'}
           isOpen={isOpen}
           onClose={onClose}
         >
@@ -618,6 +632,11 @@ export default function UserProducts() {
                     </form>
                   )}
                 </Formik>
+              )}
+              {modalBody == 'gallery' && (
+                <GalleryComp
+                  images={data[galleryCell.row.index][galleryCell.column.id]}
+                />
               )}
             </ModalBody>
           </ModalContent>

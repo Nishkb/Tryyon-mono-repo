@@ -30,12 +30,15 @@ import {
   RadioGroup,
   Radio,
   CheckboxGroup,
-  IconButton
+  IconButton,
+  Tag,
+  TagCloseButton,
+  HStack,
+  TagLabel
 } from '@chakra-ui/react';
 
 import { useRouter } from 'next/router.js';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import { Formik, Field } from 'formik';
 import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
@@ -73,6 +76,7 @@ function CreateProduct() {
 
   const [availableLocations, setAvailableLocations] = useState([]);
   const [editModalSKUIndex, setEditModalSKUIndex] = useState(0);
+  const [images, setImages] = useState([]);
 
   const [colData, setColData] = useState([
     {
@@ -101,6 +105,10 @@ function CreateProduct() {
     type: '',
     value: 0
   });
+
+  const [imgTags, setImgTags] = useState([]);
+
+  const imageInputRef = useRef();
 
   useEffect(() => {
     if (!sessionStorage.token_admin)
@@ -415,7 +423,7 @@ function CreateProduct() {
               private_product: false,
               marketPlace: false
             }}
-            onSubmit={(values) => {
+            onSubmit={async (values) => {
               if (tableData.length == 0) {
                 toast({
                   title: 'SKUs not generated',
@@ -472,6 +480,20 @@ function CreateProduct() {
                   })
                 );
               } else body.supplierId = supplier;
+
+              if (images.length == 0) {
+                toast({
+                  title: 'No image provided',
+                  status: 'error',
+                  isClosable: true
+                });
+
+                throw new Error(
+                  JSON.stringify({
+                    message: 'No image provided'
+                  })
+                );
+              }
 
               const categoryId = cat[cat.length - 1];
 
@@ -533,13 +555,21 @@ function CreateProduct() {
 
               console.log(body);
 
-              fetch('/api/products/create', {
+              let imageData = new FormData();
+
+              for (let i = 0; i < images.length; i++) {
+                imageData.append('image', images[i]);
+              }
+
+              console.log(imageData.get('image'));
+              console.log(images);
+
+              fetch('/api/upload', {
                 method: 'POST',
                 headers: {
-                  'Content-Type': 'application/json',
                   Authorization: `Bearer ${sessionStorage.token_admin}`
                 },
-                body: JSON.stringify(body)
+                body: imageData
               })
                 .then((res) => {
                   if (res.ok) {
@@ -564,49 +594,22 @@ function CreateProduct() {
                   );
                 })
                 .then((res) => {
-                  toast({
-                    title: res.message,
-                    status: 'success',
-                    isClosable: true
-                  });
-
-                  setModalContext('Creating SKUs');
-                  onOpen();
-
-                  const body = [];
-
-                  tableData.forEach((row) => {
-                    const sku = {};
-                    const { price, discountedPrice, quantity, ...attributes } =
-                      row;
-
-                    sku.slug = values.slug;
-                    sku.attributes = attributes;
-                    sku.quantity = quantity;
-                    sku.price = price;
-                    sku.discountedPrice = discountedPrice;
-                    sku.productId = res.product.id;
-                    sku.supplierId = res.product.supplierId;
-                    sku.published = false;
-                    sku.categoryIds = res.product.categoryIds;
-
-                    body.push(sku);
-                  });
-
-                  fetch('/api/sku/bulk-create', {
+                  body.images = res.body.map((img) => img.location);
+                  console.log(body);
+                })
+                .then(() => {
+                  fetch('/api/products/create', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json',
                       Authorization: `Bearer ${sessionStorage.token_admin}`
                     },
-                    body: JSON.stringify({ body })
+                    body: JSON.stringify(body)
                   })
                     .then((res) => {
                       if (res.ok) {
                         return res.json();
                       }
-
-                      const err = res.json();
 
                       if (res.status == 401 || res.status == 403) {
                         router.push(
@@ -618,6 +621,8 @@ function CreateProduct() {
                           })
                         );
                       }
+
+                      const err = res.json();
 
                       throw new Error(
                         JSON.stringify({
@@ -632,10 +637,86 @@ function CreateProduct() {
                         isClosable: true
                       });
 
-                      setStripe(false);
-                      setColor('whatsapp');
-                      setAnim(false);
-                      setSKUs(tableData.length);
+                      setModalContext('Creating SKUs');
+                      onOpen();
+
+                      const body = [];
+
+                      tableData.forEach((row) => {
+                        const sku = {};
+                        const {
+                          price,
+                          discountedPrice,
+                          quantity,
+                          ...attributes
+                        } = row;
+
+                        sku.slug = values.slug;
+                        sku.attributes = attributes;
+                        sku.quantity = quantity;
+                        sku.price = price;
+                        sku.discountedPrice = discountedPrice;
+                        sku.productId = res.product.id;
+                        sku.supplierId = res.product.supplierId;
+                        sku.published = false;
+                        sku.categoryIds = res.product.categoryIds;
+
+                        body.push(sku);
+                      });
+
+                      fetch('/api/sku/bulk-create', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${sessionStorage.token_admin}`
+                        },
+                        body: JSON.stringify({ body })
+                      })
+                        .then((res) => {
+                          if (res.ok) {
+                            return res.json();
+                          }
+
+                          const err = res.json();
+
+                          if (res.status == 401 || res.status == 403) {
+                            router.push(
+                              `/auth/admin/login?next=${router.pathname}`
+                            );
+                            throw new Error(
+                              JSON.stringify({
+                                message: 'Unauthorized Admin'
+                              })
+                            );
+                          }
+
+                          throw new Error(
+                            JSON.stringify({
+                              message: err.message
+                            })
+                          );
+                        })
+                        .then((res) => {
+                          toast({
+                            title: res.message,
+                            status: 'success',
+                            isClosable: true
+                          });
+
+                          setStripe(false);
+                          setColor('whatsapp');
+                          setAnim(false);
+                          setSKUs(tableData.length);
+                        })
+                        .catch((err) => {
+                          toast({
+                            title: err.message,
+                            status: 'error',
+                            isClosable: true
+                          });
+
+                          console.error(err.message);
+                        });
                     })
                     .catch((err) => {
                       toast({
@@ -1347,6 +1428,96 @@ function CreateProduct() {
                       />
                     </Flex>
                   )}
+                </Flex>
+
+                <Flex
+                  direction="column"
+                  my="28px"
+                  w={{ base: '100%', md: '420px' }}
+                >
+                  <Flex direction="column">
+                    <Text
+                      fontSize="2xl"
+                      fontWeight="700"
+                      color={textColor}
+                      display="flex"
+                    >
+                      Images
+                    </Text>
+                    <Text
+                      fontSize="sm"
+                      fontWeight="400"
+                      color={textColor}
+                      display="flex"
+                    >
+                      Maximum 2MBs
+                    </Text>
+                    <HStack gap="8px" my="8px">
+                      {imgTags}
+                    </HStack>
+                    <Button
+                      w="max-content"
+                      mt="8px"
+                      colorScheme="blue"
+                      onClick={() => {
+                        imageInputRef.current.click();
+                      }}
+                    >
+                      Select images
+                    </Button>
+                    <Input
+                      ref={imageInputRef}
+                      hidden
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={() => {
+                        let flag = false;
+
+                        for (
+                          let i = 0;
+                          i < imageInputRef.current.files.length;
+                          i++
+                        ) {
+                          if (imageInputRef.current.files[i].size > 2097152) {
+                            flag = true;
+                            toast({
+                              title: `File ${imageInputRef.current.files[i].name} is too large`,
+                              status: 'error',
+                              isClosable: true
+                            });
+                          }
+                        }
+
+                        if (!flag) {
+                          setImages(imageInputRef.current.files);
+                          let arr = [];
+
+                          for (
+                            let i = 0;
+                            i < imageInputRef.current.files.length;
+                            i++
+                          ) {
+                            arr.push(
+                              <Tag
+                                key={i}
+                                colorScheme="blue"
+                                variant="solid"
+                                borderRadius="full"
+                              >
+                                <TagLabel>
+                                  {imageInputRef.current.files[i].name}
+                                </TagLabel>
+                              </Tag>
+                            );
+                          }
+
+                          setImgTags(arr);
+                        }
+                        console.log(images, Array.isArray(images));
+                      }}
+                    />
+                  </Flex>
                 </Flex>
 
                 <Flex w="100%" mt="36px" flexDirection="column">
