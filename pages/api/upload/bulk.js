@@ -32,7 +32,7 @@ const uploadHandler = multer({
       cb(null, `${Date.now().toString()}-${file.originalname}`);
     }
   })
-}).single('image');
+}).array('images', 100);
 
 const handler = async (req, res) => {
   await runMiddleware(req, res, auth);
@@ -43,7 +43,7 @@ const handler = async (req, res) => {
       {
         upload: [
           async () => {
-            if (!req.file) {
+            if (!req.files) {
               throw new Error(
                 JSON.stringify({
                   errorkey: 'upload',
@@ -59,7 +59,7 @@ const handler = async (req, res) => {
 
             return {
               message: 'Success',
-              body: req.file
+              body: req.files
             };
           }
         ]
