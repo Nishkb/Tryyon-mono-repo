@@ -10,9 +10,11 @@ import {
 } from '@chakra-ui/react';
 import { CheckIcon, CloseIcon, EditIcon } from '@chakra-ui/icons';
 import { MdDeleteOutline } from 'react-icons/md';
+import { useState } from 'react';
 
 export default function CustomEditable(props) {
   const { value, setValue, deleteValue, ...rest } = props;
+  const [val, setVal] = useState(value);
 
   function EditableControls() {
     const {
@@ -28,7 +30,7 @@ export default function CustomEditable(props) {
         <IconButton icon={<CloseIcon />} {...getCancelButtonProps()} />
       </ButtonGroup>
     ) : (
-      <Flex justifyContent="center">
+      <Flex justifyContent="center" gap="8px">
         <IconButton size="sm" icon={<EditIcon />} {...getEditButtonProps()} />
         <IconButton
           size="sm"
@@ -44,8 +46,9 @@ export default function CustomEditable(props) {
       display="flex"
       alignItems="center"
       justifyContent="space-between"
-      value={value}
-      onSubmit={setValue}
+      value={val}
+      onChange={setVal}
+      onSubmit={() => setValue(val)}
       isPreviewFocusable={false}
       {...rest}
     >
