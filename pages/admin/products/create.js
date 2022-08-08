@@ -45,6 +45,8 @@ import { AddIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import CustomEditable from '../../../ui/components/CustomEditable';
 import { HSeparator } from '../../../ui/components/separator/Separator';
 import TableComp from '../../../ui/components/table';
+import Navbar from '../../../ui/components/Navbar';
+import EditableTable from '../../../ui/components/table/EditableTable';
 
 function CreateProduct() {
   // Chakra color mode
@@ -63,10 +65,11 @@ function CreateProduct() {
   const [anim, setAnim] = useState(true);
   const [tenants, setTenants] = useState([]);
 
-  const [locations, setLocations] = useState([]);
+  const [locations, setLocations] = useState('');
 
   const textColor = useColorModeValue('navy.700', 'white');
   const brandStars = useColorModeValue('brand.500', 'brand.400');
+  const bgColor = useColorModeValue('white', 'navy.800');
 
   const [variants, setVariants] = useState({});
   const [availableVariants, setAvailableVariants] = useState({
@@ -188,9 +191,9 @@ function CreateProduct() {
       })
       .then((res) => {
         setCategories((prev) => {
-          prev.root = res.categories;
-          return prev;
+          return { ...prev, root: res.categories };
         });
+        console.log(res.categories);
       })
       .catch((err) => {
         console.error(err.message);
@@ -278,17 +281,32 @@ function CreateProduct() {
 
     newCol.push({
       Header: 'QUANTITY',
-      accessor: 'quantity'
+      accessor: 'quantity',
+      type: 'editable'
     });
 
     newCol.push({
       Header: 'PRICE',
-      accessor: 'price'
+      accessor: 'price',
+      type: 'editable'
     });
 
     newCol.push({
       Header: 'DISCOUNTED PRICE',
-      accessor: 'discountedPrice'
+      accessor: 'discountedPrice',
+      type: 'editable'
+    });
+
+    newCol.push({
+      Header: 'FEATURE IMAGE',
+      accessor: 'featureImage',
+      type: 'image'
+    });
+
+    newCol.push({
+      Header: 'GALLERY',
+      accessor: 'gallery',
+      type: 'imageArray'
     });
 
     const permuted = permute(perm);
@@ -302,6 +320,8 @@ function CreateProduct() {
       newTableData[i]['quantity'] = q;
       newTableData[i]['price'] = price;
       newTableData[i]['discountedPrice'] = discountedPrice;
+      newTableData[i]['featureImage'] = null;
+      newTableData[i]['gallery'] = [];
     }
 
     setColData(newCol);
@@ -329,17 +349,18 @@ function CreateProduct() {
                 message: 'Uauthorised Admin'
               })
             );
-          } else {
-            const err = res.json();
-
-            throw new Error(
-              JSON.stringify({
-                message: err.message
-              })
-            );
           }
+
+          const err = res.json();
+
+          throw new Error(
+            JSON.stringify({
+              message: err.message
+            })
+          );
         })
         .then((res) => {
+          console.log(res.categories);
           if (
             res.categories[0].children &&
             res.categories[0].children.length != 0
@@ -380,6 +401,7 @@ function CreateProduct() {
 
   return (
     <>
+      <Navbar heading="Create your products" size="full" />
       <Flex
         maxW={{ base: '100%', md: 'max-content' }}
         w="100%"
@@ -387,14 +409,10 @@ function CreateProduct() {
         alignItems="start"
         justifyContent="center"
         px={{ base: '25px', md: '30px' }}
-        mt="5px"
+        pt="100px"
         flexDirection="column"
+        color={textColor}
       >
-        <Box me="auto">
-          <Heading color={textColor} fontSize="34px" mb="16px">
-            Create your products
-          </Heading>
-        </Box>
         <Flex
           zIndex="2"
           direction="column"
@@ -558,13 +576,10 @@ function CreateProduct() {
               let imageData = new FormData();
 
               for (let i = 0; i < images.length; i++) {
-                imageData.append('image', images[i]);
+                imageData.append('images', images[i]);
               }
 
-              console.log(imageData.get('image'));
-              console.log(images);
-
-              fetch('/api/upload', {
+              fetch('/api/upload/bulk', {
                 method: 'POST',
                 headers: {
                   Authorization: `Bearer ${sessionStorage.token_admin}`
@@ -641,6 +656,7 @@ function CreateProduct() {
                       onOpen();
 
                       const body = [];
+                      const skuImages = new FormData();
 
                       tableData.forEach((row) => {
                         const sku = {};
@@ -648,6 +664,8 @@ function CreateProduct() {
                           price,
                           discountedPrice,
                           quantity,
+                          featureImage,
+                          gallery,
                           ...attributes
                         } = row;
 
@@ -660,6 +678,8 @@ function CreateProduct() {
                         sku.supplierId = res.product.supplierId;
                         sku.published = false;
                         sku.categoryIds = res.product.categoryIds;
+                        sku.featureImage = featureImage;
+                        sku.gallery = gallery;
 
                         body.push(sku);
                       });
@@ -743,7 +763,7 @@ function CreateProduct() {
               <form>
                 <Flex w={{ base: '100%', md: '420px' }}>
                   <Flex
-                    bgColor="white"
+                    bgColor={bgColor}
                     borderRadius="2xl"
                     p="32px"
                     h="max-content"
@@ -760,7 +780,8 @@ function CreateProduct() {
                         color={textColor}
                         display="flex"
                       >
-                        Name<Text color={brandStars}>*</Text>
+                        Name
+                        <Text color={brandStars}>*</Text>
                       </FormLabel>
                       <Field
                         as={Input}
@@ -794,7 +815,8 @@ function CreateProduct() {
                         color={textColor}
                         display="flex"
                       >
-                        Description<Text color={brandStars}>*</Text>
+                        Description
+                        <Text color={brandStars}>*</Text>
                       </FormLabel>
                       <Field
                         as={Input}
@@ -830,7 +852,8 @@ function CreateProduct() {
                         color={textColor}
                         display="flex"
                       >
-                        Short Description<Text color={brandStars}>*</Text>
+                        Short Description
+                        <Text color={brandStars}>*</Text>
                       </FormLabel>
                       <Field
                         as={Input}
@@ -872,7 +895,8 @@ function CreateProduct() {
                         color={textColor}
                         display="flex"
                       >
-                        Slug<Text color={brandStars}>*</Text>
+                        Slug
+                        <Text color={brandStars}>*</Text>
                       </FormLabel>
                       <Field
                         as={Input}
@@ -907,7 +931,8 @@ function CreateProduct() {
                         color={textColor}
                         mb="5px"
                       >
-                        Quantity<Text color={brandStars}>*</Text>
+                        Quantity
+                        <Text color={brandStars}>*</Text>
                       </FormLabel>
                       <Field
                         as={Input}
@@ -941,7 +966,8 @@ function CreateProduct() {
                         color={textColor}
                         mb="5px"
                       >
-                        Price<Text color={brandStars}>*</Text>
+                        Price
+                        <Text color={brandStars}>*</Text>
                       </FormLabel>
                       <Field
                         as={Input}
@@ -977,7 +1003,8 @@ function CreateProduct() {
                         color={textColor}
                         mb="5px"
                       >
-                        Discounted Price<Text color={brandStars}>*</Text>
+                        Discounted Price
+                        <Text color={brandStars}>*</Text>
                       </FormLabel>
                       <Field
                         as={Input}
@@ -1015,7 +1042,8 @@ function CreateProduct() {
                         color={textColor}
                         display="flex"
                       >
-                        Manufacturer<Text color={brandStars}>*</Text>
+                        Manufacturer
+                        <Text color={brandStars}>*</Text>
                       </FormLabel>
                       <Field
                         as={Input}
@@ -1051,7 +1079,8 @@ function CreateProduct() {
                         color={textColor}
                         display="flex"
                       >
-                        Country of Origin<Text color={brandStars}>*</Text>
+                        Country of Origin
+                        <Text color={brandStars}>*</Text>
                       </FormLabel>
                       <Field
                         as={Input}
@@ -1087,7 +1116,8 @@ function CreateProduct() {
                         color={textColor}
                         display="flex"
                       >
-                        Featured From<Text color={brandStars}>*</Text>
+                        Featured From
+                        <Text color={brandStars}>*</Text>
                       </FormLabel>
                       <Field
                         as={Input}
@@ -1120,7 +1150,8 @@ function CreateProduct() {
                         color={textColor}
                         display="flex"
                       >
-                        Featured To<Text color={brandStars}>*</Text>
+                        Featured To
+                        <Text color={brandStars}>*</Text>
                       </FormLabel>
                       <Field
                         as={Input}
@@ -1148,7 +1179,8 @@ function CreateProduct() {
                       color={textColor}
                       display="flex"
                     >
-                      Supplier<Text color={brandStars}>*</Text>
+                      Supplier
+                      <Text color={brandStars}>*</Text>
                     </FormLabel>
                     <Menu strategy="fixed">
                       <MenuButton
@@ -1273,7 +1305,7 @@ function CreateProduct() {
                   </Flex>
                   <Flex direction="column" ml="40px">
                     <Flex
-                      bgColor="white"
+                      bgColor={bgColor}
                       borderRadius="2xl"
                       p="32px"
                       flexDirection="column"
@@ -1288,40 +1320,28 @@ function CreateProduct() {
                       </Text>
                       <Flex>
                         <Flex direction="column">
-                          {availableLocations.map((item, index) => {
-                            return (
-                              <Checkbox
-                                key={index}
-                                mt="10px"
-                                w="max-content"
-                                onChange={(e) => {
-                                  if (e.target.checked === true) {
-                                    setLocations((prev) => [
-                                      ...prev,
-                                      e.target.value
-                                    ]);
-                                  } else {
-                                    setLocations((prev) => {
-                                      prev.splice(
-                                        prev.indexOf(e.target.value),
-                                        1
-                                      );
-                                      return prev;
-                                    });
-                                  }
-                                }}
-                                value={item.id}
-                              >
-                                {item.name}
-                              </Checkbox>
-                            );
-                          })}
+                          <RadioGroup
+                            onChange={(value) => setLocations([value])}
+                          >
+                            {availableLocations.map((item, index) => {
+                              return (
+                                <Radio
+                                  key={index}
+                                  mt="10px"
+                                  w="max-content"
+                                  value={item.id}
+                                >
+                                  {item.name}
+                                </Radio>
+                              );
+                            })}
+                          </RadioGroup>
                         </Flex>
                       </Flex>
                     </Flex>
 
                     <Flex
-                      bgColor="white"
+                      bgColor={bgColor}
                       borderRadius="2xl"
                       p="32px"
                       mt="32px"
@@ -1390,7 +1410,10 @@ function CreateProduct() {
                       onChange={(e) =>
                         setReseller((reseller) => {
                           const { allowed, ...rest } = reseller;
-                          return { allowed: !allowed, ...rest };
+                          return {
+                            allowed: !allowed,
+                            ...rest
+                          };
                         })
                       }
                     />
@@ -1548,11 +1571,11 @@ function CreateProduct() {
                     {Object.keys(availableVariants).map((variant, index) => {
                       return (
                         <Flex
-                          key={index}
+                          key={variant}
                           direction="column"
                           minW="200px"
                           p="8px 16px"
-                          bgColor="white"
+                          bgColor={bgColor}
                           borderRadius="xl"
                         >
                           <CustomEditable
@@ -1560,9 +1583,11 @@ function CreateProduct() {
                             fontWeight="700"
                             value={variant}
                             setValue={(value) => {
-                              if (value != variant)
+                              if (value != variant) {
                                 setAvailableVariants((prev) => {
-                                  const newObj = { ...prev };
+                                  const newObj = {
+                                    ...prev
+                                  };
 
                                   Object.defineProperty(
                                     newObj,
@@ -1576,14 +1601,54 @@ function CreateProduct() {
 
                                   return newObj;
                                 });
+
+                                if (variants[variant]) {
+                                  setVariants((prev) => {
+                                    const newObj = {
+                                      ...prev
+                                    };
+
+                                    Object.defineProperty(
+                                      newObj,
+                                      value,
+                                      Object.getOwnPropertyDescriptor(
+                                        newObj,
+                                        variant
+                                      )
+                                    );
+
+                                    delete newObj[variant];
+                                    return newObj;
+                                  });
+                                }
+                              }
                             }}
                             deleteValue={() => {
                               setAvailableVariants((prev) => {
-                                const newObj = { ...prev };
+                                const newObj = {
+                                  ...prev
+                                };
 
                                 delete newObj[variant];
                                 return newObj;
                               });
+
+                              if (variants[variant]) {
+                                setVariants((prev) => {
+                                  const newObj = {
+                                    ...prev
+                                  };
+                                  delete newObj[variant];
+
+                                  return newObj;
+                                });
+                              }
+
+                              updateTable(
+                                values.quantity,
+                                values.price,
+                                values.discountedPrice
+                              );
 
                               console.log(availableVariants);
                             }}
@@ -1600,29 +1665,87 @@ function CreateProduct() {
                                 prev[variant] = value;
                                 return prev;
                               });
+
+                              updateTable(
+                                values.quantity,
+                                values.price,
+                                values.discountedPrice
+                              );
+
+                              console.log(variants);
                             }}
                           >
                             {availableVariants[variant].map((val, idx) => {
                               return (
-                                <Checkbox key={idx} value={val}>
+                                <Checkbox key={val} value={val}>
                                   <CustomEditable
                                     py="4px"
                                     minW="200px"
                                     value={val}
                                     setValue={(value) => {
-                                      setAvailableVariants((prev) => {
-                                        const newObj = { ...prev };
+                                      if (
+                                        availableVariants[variant].indexOf(
+                                          value
+                                        ) == -1
+                                      ) {
+                                        setAvailableVariants((prev) => {
+                                          const newObj = {
+                                            ...prev
+                                          };
 
-                                        newObj[variant][idx] = value;
-                                        return newObj;
-                                      });
+                                          newObj[variant][idx] = value;
+                                          return newObj;
+                                        });
+                                      } else
+                                        toast({
+                                          title:
+                                            'Attribute names must be unique',
+                                          status: 'error',
+                                          isClosable: true
+                                        });
+
+                                      if (
+                                        variants[variant] &&
+                                        variants[variant].indexOf(val) != -1
+                                      ) {
+                                        setVariants((prev) => {
+                                          const newObj = {
+                                            ...prev
+                                          };
+                                          newObj[variant][
+                                            variants[variant].indexOf(val)
+                                          ] = value;
+                                          return newObj;
+                                        });
+                                      }
+
+                                      console.log(availableVariants);
+                                      console.log(variants);
                                     }}
                                     deleteValue={() => {
                                       setAvailableVariants((prev) => {
-                                        const newObj = { ...prev };
+                                        const newObj = {
+                                          ...prev
+                                        };
                                         newObj[variant].splice(idx, 1);
                                         return newObj;
                                       });
+
+                                      if (
+                                        variants[variant] &&
+                                        variants[variant].indexOf(val) != -1
+                                      ) {
+                                        setVariants((prev) => {
+                                          const newObj = {
+                                            ...prev
+                                          };
+                                          newObj[variant].splice(
+                                            variants[variant].indexOf(val),
+                                            1
+                                          );
+                                          return newObj;
+                                        });
+                                      }
 
                                       console.log(availableVariants);
                                     }}
@@ -1643,7 +1766,9 @@ function CreateProduct() {
 
                                 if (availableVariants[variant].indexOf(v) == -1)
                                   setAvailableVariants((prev) => {
-                                    const newObj = { ...prev };
+                                    const newObj = {
+                                      ...prev
+                                    };
 
                                     newObj[variant].push(v);
 
@@ -1683,14 +1808,20 @@ function CreateProduct() {
                       )
                     }
                   >
-                    Generate
+                    Update
                   </Button>
                 </Flex>
 
                 {/* For generating table entries dynamically */}
-                <TableComp
+                <EditableTable
                   columnsData={colData}
                   tableData={tableData}
+                  setTableData={setTableData}
+                />
+                {/* <TableComp
+                  columnsData={colData}
+                  tableData={tableData}
+                  editableFields={['QUANTITY', 'PRICE', 'DISCOUNTED PRICE']}
                   editEntry={(e) => {
                     setEditModalSKUIndex(e[0].row.index);
                     setModalContext('Edit SKU');
@@ -1707,7 +1838,7 @@ function CreateProduct() {
                       return u;
                     });
                   }}
-                />
+                /> */}
 
                 {isOpen && (
                   <Modal isOpen={isOpen} onClose={onClose}>
@@ -1809,7 +1940,8 @@ function CreateProduct() {
                                         color={textColor}
                                         mb="5px"
                                       >
-                                        Price<Text color={brandStars}>*</Text>
+                                        Price
+                                        <Text color={brandStars}>*</Text>
                                       </FormLabel>
                                       <Field
                                         as={Input}
@@ -1897,7 +2029,7 @@ function CreateProduct() {
                 <FormControl>
                   <Button
                     fontSize="sm"
-                    variant="brand"
+                    colorScheme="blue"
                     mb="18px"
                     mt="20px"
                     onClick={() => {

@@ -717,12 +717,13 @@ export default function UserProducts() {
               duration: 2000,
               isClosable: true
             });
-            return { products: [] };
+            return { productImports: [] };
           }
           throw new Error(res_data.message);
         })
         .then((res) => {
           setImportsData(res.productImports);
+          console.log(res.productImports);
         })
         .catch((err) => {
           console.log(err);
@@ -751,38 +752,12 @@ export default function UserProducts() {
 
   return (
     <>
-      <Layout>
-        <Flex
-          px="25px"
-          justify="space-between"
-          mb="20px"
-          align="center"
-          alignItems="center"
-        >
-          <Text
-            color={textColor}
-            fontSize="32px"
-            fontWeight="700"
-            lineHeight="100%"
-          >
-            Your Products
-          </Text>
-          <SearchBar
-            background={bgColor}
-            value={searchString}
-            setValue={setSearchString}
-            placeholder="e.g. hello isRoot:true id:62bad0b6f4b8ec8aad5ced34"
-          >
-            <Button
-              fontSize={{ sm: '14px' }}
-              colorScheme="blue"
-              onClick={() => router.push('/products/create')}
-            >
-              Create
-            </Button>
-          </SearchBar>
-        </Flex>
-
+      <Layout
+        heading="Your products"
+        searchString={searchString}
+        setSearchString={setSearchString}
+        placeholder="Search products..."
+      >
         <Facet
           category={categoryQuery}
           attributes={attributesQuery}

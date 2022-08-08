@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import {
   Button,
   Flex,
+  IconButton,
   Input,
   Text,
   Textarea,
@@ -16,6 +17,7 @@ import {
 import { SearchBar } from '../../ui/components/searchbar';
 import useDebounce from '../../utils/hooks/useDebounce';
 import ModalComp from '../../ui/components/modal';
+import { AddIcon } from '@chakra-ui/icons';
 
 const columnsData = [
   {
@@ -340,37 +342,27 @@ export default function AttributePage() {
 
   return (
     <>
-      <Layout>
-        <Flex
-          px="25px"
-          justify="space-between"
-          mb="20px"
-          align="center"
-          alignItems="center"
+      <Layout
+        heading="Attributes"
+        searchString={searchString}
+        setSearchString={setSearchString}
+        placeholder="e.g. hello isRoot:true id:62bad0b6f4b8ec8aad5ced34"
+      >
+        <IconButton
+          colorScheme="telegram"
+          onClick={openCreate}
+          rounded="full"
+          w="70px"
+          h="70px"
+          position="fixed"
+          right="40px"
+          bottom="40px"
+          zIndex="1"
+          boxShadow="lg"
         >
-          <Text
-            color={textColor}
-            fontSize="32px"
-            fontWeight="700"
-            lineHeight="100%"
-          >
-            Attributes Table
-          </Text>
-          <SearchBar
-            background={bgColor}
-            value={searchString}
-            setValue={setSearchString}
-            placeholder="e.g. hello isRoot:true id:62bad0b6f4b8ec8aad5ced34"
-          >
-            <Button
-              fontSize={{ sm: '14px' }}
-              colorScheme="blue"
-              onClick={openCreate}
-            >
-              Create
-            </Button>
-          </SearchBar>
-        </Flex>
+          <AddIcon />
+        </IconButton>
+
         <TableComp
           editEntry={openEdit}
           deleteEntry={openDelete}

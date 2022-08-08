@@ -1,12 +1,13 @@
-import { Box, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Text, useColorModeValue } from '@chakra-ui/react';
 import Image from 'next/image';
-import Navbar, { checkLoggedIn } from '../ui/components/Navbar';
+import Navbar from '../ui/components/Navbar';
 import bg from '../ui/assets/img/layout/bg.jpg';
 
 export default function Home() {
+  const textColor = useColorModeValue('blue.900', 'white');
   return (
     <Box minH="100vh" h="100%">
-      <Navbar isLoggedIn={checkLoggedIn()} />
+      <Navbar size="full" />
       <Flex justifyContent="space-between">
         <Flex p="150px 100px" direction="column">
           <Text
@@ -21,7 +22,7 @@ export default function Home() {
             fontSize="100px"
             lineHeight="100px"
             fontWeight="700"
-            color="blue.900"
+            color={textColor}
           >
             Tryyon
           </Text>
@@ -33,7 +34,7 @@ export default function Home() {
             fringilla finibus dui, a pellentesque erat interdum eu.
           </Text>
         </Flex>
-        <Flex h="100vh" w="40vw" position="relative" zIndex="-1">
+        <Flex h="100vh" w="40vw">
           <Image
             src={bg}
             alt="bg image"

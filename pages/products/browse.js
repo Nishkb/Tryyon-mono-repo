@@ -346,30 +346,12 @@ export default function UserProducts() {
 
   return (
     <>
-      <Layout>
-        <Flex
-          px="25px"
-          justify="space-between"
-          mb="20px"
-          align="center"
-          alignItems="center"
-        >
-          <Text
-            color={textColor}
-            fontSize="32px"
-            fontWeight="700"
-            lineHeight="100%"
-          >
-            Browse Products
-          </Text>
-          <SearchBar
-            background={bgColor}
-            value={searchString}
-            setValue={setSearchString}
-            placeholder="e.g. hello isRoot:true id:62bad0b6f4b8ec8aad5ced34"
-          ></SearchBar>
-        </Flex>
-
+      <Layout
+        heading="Browse Products"
+        searchString={searchString}
+        setSearchString={setSearchString}
+        placeholder="e.g. hello isRoot:true id:62bad0b6f4b8ec8aad5ced34"
+      >
         <Facet
           category={categoryQuery}
           attributes={attributesQuery}
@@ -582,7 +564,10 @@ export default function UserProducts() {
 
                         <CheckboxGroup
                           onChange={(skuIds) =>
-                            setValues((prev) => ({ ...prev, skuIds }))
+                            setValues((prev) => ({
+                              ...prev,
+                              skuIds
+                            }))
                           }
                         >
                           {skus.map((sku, index) => (

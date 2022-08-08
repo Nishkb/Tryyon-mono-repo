@@ -33,7 +33,9 @@ const handler = async (req, res) => {
 
           progress.user = userCheck[0];
 
-          const company = await getCompany({ ownerId: userCheck[0].id });
+          const company = await getCompany({
+            ownerId: userCheck[0].id
+          });
 
           if (company.length != 0) {
             progress.company = company;
