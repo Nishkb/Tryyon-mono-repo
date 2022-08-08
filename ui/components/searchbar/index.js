@@ -27,7 +27,7 @@ export function SearchBar(props) {
   return (
     <Flex>
       {children}
-      <InputGroup ml="16px" w={{ base: '100%', md: '300px' }} {...rest}>
+      <InputGroup w={{ base: '100%', md: '200px' }} {...rest}>
         <InputLeftElement>
           <IconButton
             bg="inherit"
