@@ -19,7 +19,9 @@ const schema = {
       attributes: Joi.object().optional(),
       categoryIds: Joi.array().optional(),
       price: Joi.number().optional(),
-      discountedPrice: Joi.number().optional()
+      discountedPrice: Joi.number().optional(),
+      featureImage: Joi.string().optional(),
+      gallery: Joi.array().optional()
     })
   })
 };

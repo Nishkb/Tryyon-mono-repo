@@ -20,7 +20,9 @@ const schema = {
         attributes: Joi.object().required(),
         categoryIds: Joi.array().required(),
         price: Joi.number().required(),
-        discountedPrice: Joi.number().required()
+        discountedPrice: Joi.number().required(),
+        featureImage: Joi.string().optional(),
+        gallery: Joi.array().default([])
       })
     )
   })
