@@ -81,6 +81,8 @@ model SKU {
   discountedPrice  Float
   ProductImports   ProductImports[] @relation(fields: [productImportIds], references: [id])
   productImportIds String[]         @db.ObjectId
+  featureImage     String?
+  gallery          String[]
 }
 
 model Category {
