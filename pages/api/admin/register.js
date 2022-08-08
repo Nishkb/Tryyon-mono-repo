@@ -31,7 +31,11 @@ const handler = async (req, res) => {
       {
         verification: async () => {
           const { email, username, phone } = req.body;
-          const adminCheck = await getAdmin({ username, email, phone });
+          const adminCheck = await getAdmin({
+            username,
+            email,
+            phone
+          });
 
           if (adminCheck.length != 0) {
             throw new Error(

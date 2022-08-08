@@ -46,7 +46,9 @@ const handler = async (req, res) => {
           }
 
           if (parentCategoryId) {
-            const parentCategory = await getCategory({ id: parentCategoryId });
+            const parentCategory = await getCategory({
+              id: parentCategoryId
+            });
 
             if (parentCategory.length == 0) {
               throw new Error(

@@ -113,7 +113,10 @@ export default function TableComp(props) {
                     <Flex
                       justify="space-between"
                       align="center"
-                      fontSize={{ sm: '10px', lg: '12px' }}
+                      fontSize={{
+                        sm: '10px',
+                        lg: '12px'
+                      }}
                       color="gray.500"
                     >
                       <Text>{column.render('Header')}</Text>
@@ -186,6 +189,16 @@ export default function TableComp(props) {
                             </Flex>
                           ));
                           data = <Flex>{internal_data}</Flex>;
+                        } else if (typeof cell.value == 'boolean') {
+                          data = (
+                            <Text
+                              color={textColor}
+                              fontSize="sm"
+                              fontWeight="400"
+                            >
+                              {cell.value.toString()}
+                            </Text>
+                          );
                         } else {
                           data = (
                             <Flex align="center">
@@ -194,9 +207,7 @@ export default function TableComp(props) {
                                 fontSize="sm"
                                 fontWeight="400"
                               >
-                                {typeof cell.value == 'boolean'
-                                  ? cell.value.toString()
-                                  : cell.value}
+                                {cell.value}
                               </Text>
                             </Flex>
                           );
@@ -226,7 +237,11 @@ export default function TableComp(props) {
                   <Td
                     display="flex"
                     alignItems="center"
-                    minW={{ sm: '150px', md: '200px', lg: 'auto' }}
+                    minW={{
+                      sm: '150px',
+                      md: '200px',
+                      lg: 'auto'
+                    }}
                     borderColor="transparent"
                     key="ACTION"
                   >

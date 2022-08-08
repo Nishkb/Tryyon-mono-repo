@@ -49,7 +49,11 @@ const handler = async (req, res) => {
 
             if (admin && (await bcrypt.compare(password, admin.passwordHash))) {
               const token = jwt.sign(
-                { id: admin.id, email: admin.email, role: admin.role },
+                {
+                  id: admin.id,
+                  email: admin.email,
+                  role: admin.role
+                },
                 process.env.ADMIN_TOKEN_KEY,
                 { expiresIn: '2h' }
               );

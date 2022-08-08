@@ -44,7 +44,9 @@ const handler = async (req, res) => {
               );
             }
 
-            const associationCheck = await getAssociation({ userId });
+            const associationCheck = await getAssociation({
+              userId
+            });
 
             // if the user is already having an association
             if (associationCheck.length != 0) {
@@ -91,7 +93,9 @@ const handler = async (req, res) => {
             const { tenantId, approval } = req.body;
             if (approval) delete req.body.approval;
 
-            const associationCheck = await getAssociation({ userId: id });
+            const associationCheck = await getAssociation({
+              userId: id
+            });
 
             // if the user is already having an association
             if (associationCheck.length != 0) {
@@ -144,7 +148,10 @@ const handler = async (req, res) => {
             const createdAssociation = await createAssociation(body);
 
             if (createdAssociation)
-              return { message: 'New Association Created', createdAssociation };
+              return {
+                message: 'New Association Created',
+                createdAssociation
+              };
 
             throw new Error(
               JSON.stringify({

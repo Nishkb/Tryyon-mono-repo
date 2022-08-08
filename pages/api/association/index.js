@@ -16,7 +16,10 @@ const handler = async (req, res) => {
             const associations = await getAssociation({});
 
             if (associations.length != 0)
-              return { message: 'Associations found', associations };
+              return {
+                message: 'Associations found',
+                associations
+              };
 
             throw new Error(
               JSON.stringify({

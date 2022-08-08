@@ -11,7 +11,9 @@ const handler = async (req, res) => {
           async () => {
             const { code } = req.query;
 
-            const admin = await getAdmin({ verificationCode: code });
+            const admin = await getAdmin({
+              verificationCode: code
+            });
 
             if (admin.length != 0) {
               if (

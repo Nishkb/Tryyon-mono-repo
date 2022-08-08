@@ -165,7 +165,8 @@ function Register() {
                   color={textColor}
                   display="flex"
                 >
-                  Company Name<Text color={brandStars}>*</Text>
+                  Company Name
+                  <Text color={brandStars}>*</Text>
                 </FormLabel>
                 <InputGroup size="md">
                   <Field
@@ -260,7 +261,8 @@ function Register() {
                   color={textColor}
                   display="flex"
                 >
-                  GST Certificate<Text color={brandStars}>*</Text>
+                  GST Certificate
+                  <Text color={brandStars}>*</Text>
                 </FormLabel>
                 <Field
                   as={Input}
@@ -367,7 +369,8 @@ function Register() {
                   color={textColor}
                   display="flex"
                 >
-                  Aadhar Number<Text color={brandStars}>*</Text>
+                  Aadhar Number
+                  <Text color={brandStars}>*</Text>
                 </FormLabel>
                 <InputGroup size="md">
                   <Field

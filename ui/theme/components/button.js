@@ -78,7 +78,9 @@ export const buttonStyles = {
           _focus: {
             bg: mode('secondaryGray.300', 'brand.400')(props)
           },
-          _active: { bg: mode('secondaryGray.300', 'brand.400')(props) },
+          _active: {
+            bg: mode('secondaryGray.300', 'brand.400')(props)
+          },
           _hover: {
             bg: mode('secondaryGray.200', 'brand.400')(props)
           }

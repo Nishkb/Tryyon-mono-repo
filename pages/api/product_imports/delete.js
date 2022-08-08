@@ -27,7 +27,9 @@ const handler = async (req, res) => {
           const { id } = req.body;
 
           if (req.admin) {
-            const productImportCheck = await getProductImport({ id });
+            const productImportCheck = await getProductImport({
+              id
+            });
 
             if (productImportCheck.length == 0) {
               throw new Error(

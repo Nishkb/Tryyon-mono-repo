@@ -94,7 +94,10 @@ const handler = async (req, res) => {
             const deletedAssociation = await deleteAssociation(id);
 
             if (deletedAssociation)
-              return { message: 'Association deleted', deletedAssociation };
+              return {
+                message: 'Association deleted',
+                deletedAssociation
+              };
 
             throw new Error(
               JSON.stringify({

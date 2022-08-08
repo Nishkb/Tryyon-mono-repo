@@ -33,7 +33,10 @@ export const inputStyles = {
               'rgba(135, 140, 189, 0.3)'
             )(props),
             borderRadius: '16px',
-            _placeholder: { color: 'secondaryGray.600', fontWeight: '400' }
+            _placeholder: {
+              color: 'secondaryGray.600',
+              fontWeight: '400'
+            }
           }
         }),
         authSecondary: (props) => ({
