@@ -7,39 +7,39 @@ import auth from '../../../utils/middlewares/auth';
 import { getUser } from '../../../prisma/user/user';
 
 const handler = async (req, res) => {
-  await runMiddleware(req, res, auth);
-  if (!req.admin) res.status(401).json({ message: 'Unauthorized access' });
-  else if (req.method == 'GET') {
-    async.auto(
-      {
-        main: async () => {
-          const users = await getUser({});
+    await runMiddleware(req, res, auth);
+    if (!req.admin) res.status(401).json({ message: 'Unauthorized access' });
+    else if (req.method == 'GET') {
+        async.auto(
+            {
+                main: async () => {
+                    const users = await getUser({});
 
-          if (users.length == 0) {
-            throw new Error(
-              JSON.stringify({
-                errorkey: 'verification',
-                body: {
-                  status: 404,
-                  data: {
-                    message: 'No such user found'
-                  }
+                    if (users.length == 0) {
+                        throw new Error(
+                            JSON.stringify({
+                                errorkey: 'verification',
+                                body: {
+                                    status: 404,
+                                    data: {
+                                        message: 'No such user found'
+                                    }
+                                }
+                            })
+                        );
+                    }
+
+                    return {
+                        message: 'Users found',
+                        users
+                    };
                 }
-              })
-            );
-          }
-
-          return {
-            message: 'Users found',
-            users
-          };
-        }
-      },
-      handleResponse(req, res, 'main')
-    );
-  } else {
-    res.status(405).json({ message: 'Method Not Allowed' });
-  }
+            },
+            handleResponse(req, res, 'main')
+        );
+    } else {
+        res.status(405).json({ message: 'Method Not Allowed' });
+    }
 };
 
 export default handler;

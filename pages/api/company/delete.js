@@ -8,89 +8,90 @@ import auth from '../../../utils/middlewares/auth';
 import runMiddleware from '../../../utils/helpers/runMiddleware';
 
 const schema = {
-  body: Joi.object({
-    id: Joi.string().required()
-  })
+    body: Joi.object({
+        id: Joi.string().required()
+    })
 };
 
 const handler = async (req, res) => {
-  await runMiddleware(req, res, auth);
-  if (req.method == 'DELETE') {
-    async.auto(
-      {
-        verification: async () => {
-          const { id } = req.body;
-          const companyCheck = await getCompany({ id });
+    await runMiddleware(req, res, auth);
+    if (req.method == 'DELETE') {
+        async.auto(
+            {
+                verification: async () => {
+                    const { id } = req.body;
+                    const companyCheck = await getCompany({ id });
 
-          if (companyCheck.length == 0) {
-            throw new Error(
-              JSON.stringify({
-                errorkey: 'verification',
-                body: {
-                  status: 404,
-                  data: {
-                    message: 'Company not found'
-                  }
-                }
-              })
-            );
-          }
-
-          if (req.user) {
-            const ownerId = req.user.id;
-
-            if (companyCheck[0].ownerId != ownerId) {
-              throw new Error(
-                JSON.stringify({
-                  errorkey: 'verification',
-                  body: {
-                    status: 401,
-                    data: {
-                      message: 'User is not the owner of this company'
+                    if (companyCheck.length == 0) {
+                        throw new Error(
+                            JSON.stringify({
+                                errorkey: 'verification',
+                                body: {
+                                    status: 404,
+                                    data: {
+                                        message: 'Company not found'
+                                    }
+                                }
+                            })
+                        );
                     }
-                  }
-                })
-              );
-            }
-          }
 
-          return {
-            message: 'Company found'
-          };
-        },
-        delete: [
-          'verification',
-          async () => {
-            const { id } = req.body;
+                    if (req.user) {
+                        const ownerId = req.user.id;
 
-            const res = await deleteCompany(id);
+                        if (companyCheck[0].ownerId != ownerId) {
+                            throw new Error(
+                                JSON.stringify({
+                                    errorkey: 'verification',
+                                    body: {
+                                        status: 401,
+                                        data: {
+                                            message:
+                                                'User is not the owner of this company'
+                                        }
+                                    }
+                                })
+                            );
+                        }
+                    }
 
-            if (res) {
-              return {
-                message: 'Company deleted',
-                company: res
-              };
-            }
+                    return {
+                        message: 'Company found'
+                    };
+                },
+                delete: [
+                    'verification',
+                    async () => {
+                        const { id } = req.body;
 
-            throw new Error(
-              JSON.stringify({
-                errorKey: 'delete',
-                body: {
-                  status: 404,
-                  data: {
-                    message: 'No such Company found'
-                  }
-                }
-              })
-            );
-          }
-        ]
-      },
-      handleResponse(req, res, 'delete')
-    );
-  } else {
-    res.status(405).json({ message: 'Method Not Allowed' });
-  }
+                        const res = await deleteCompany(id);
+
+                        if (res) {
+                            return {
+                                message: 'Company deleted',
+                                company: res
+                            };
+                        }
+
+                        throw new Error(
+                            JSON.stringify({
+                                errorKey: 'delete',
+                                body: {
+                                    status: 404,
+                                    data: {
+                                        message: 'No such Company found'
+                                    }
+                                }
+                            })
+                        );
+                    }
+                ]
+            },
+            handleResponse(req, res, 'delete')
+        );
+    } else {
+        res.status(405).json({ message: 'Method Not Allowed' });
+    }
 };
 
 export default validate(schema, handler);

@@ -8,85 +8,88 @@ import validate from '../../../utils/middlewares/validation';
 import handleResponse from '../../../utils/helpers/handleResponse';
 
 const schema = {
-  body: Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().required()
-  })
+    body: Joi.object({
+        email: Joi.string().email().required(),
+        password: Joi.string().required()
+    })
 };
 
 const handler = async (req, res) => {
-  if (req.method == 'POST') {
-    async.auto(
-      {
-        verification: async () => {
-          const { email } = req.body;
-          const adminCheck = await getAdmin({ email });
+    if (req.method == 'POST') {
+        async.auto(
+            {
+                verification: async () => {
+                    const { email } = req.body;
+                    const adminCheck = await getAdmin({ email });
 
-          if (adminCheck.length == 0) {
-            throw new Error(
-              JSON.stringify({
-                errorkey: 'verification',
-                body: {
-                  status: 404,
-                  data: {
-                    message: 'No such admin found'
-                  }
-                }
-              })
-            );
-          }
+                    if (adminCheck.length == 0) {
+                        throw new Error(
+                            JSON.stringify({
+                                errorkey: 'verification',
+                                body: {
+                                    status: 404,
+                                    data: {
+                                        message: 'No such admin found'
+                                    }
+                                }
+                            })
+                        );
+                    }
 
-          return {
-            message: 'Admin Validated',
-            admin: adminCheck[0]
-          };
-        },
-        login: [
-          'verification',
-          async (results) => {
-            const { password } = req.body;
-            const { admin } = results.verification;
-
-            if (admin && (await bcrypt.compare(password, admin.passwordHash))) {
-              const token = jwt.sign(
-                {
-                  id: admin.id,
-                  email: admin.email,
-                  role: admin.role
+                    return {
+                        message: 'Admin Validated',
+                        admin: adminCheck[0]
+                    };
                 },
-                process.env.ADMIN_TOKEN_KEY,
-                { expiresIn: '2h' }
-              );
+                login: [
+                    'verification',
+                    async (results) => {
+                        const { password } = req.body;
+                        const { admin } = results.verification;
 
-              const updatedAdmin = await updateAdmin(admin.id, {
-                token
-              });
+                        if (
+                            admin &&
+                            (await bcrypt.compare(password, admin.passwordHash))
+                        ) {
+                            const token = jwt.sign(
+                                {
+                                    id: admin.id,
+                                    email: admin.email,
+                                    role: admin.role
+                                },
+                                process.env.ADMIN_TOKEN_KEY,
+                                { expiresIn: '2h' }
+                            );
 
-              return {
-                message: 'admin Authenticated',
-                updatedAdmin
-              };
-            }
+                            const updatedAdmin = await updateAdmin(admin.id, {
+                                token
+                            });
 
-            throw new Error(
-              JSON.stringify({
-                errorkey: 'login',
-                body: {
-                  status: 400,
-                  data: {
-                    message: 'Invalid Credentials'
-                  }
-                }
-              })
-            );
-          }
-        ]
-      },
-      handleResponse(req, res, 'login')
-    );
-  } else {
-    res.status(405).json({ message: 'Method Not Allowed' });
-  }
+                            return {
+                                message: 'admin Authenticated',
+                                updatedAdmin
+                            };
+                        }
+
+                        throw new Error(
+                            JSON.stringify({
+                                errorkey: 'login',
+                                body: {
+                                    status: 400,
+                                    data: {
+                                        message: 'Invalid Credentials'
+                                    }
+                                }
+                            })
+                        );
+                    }
+                ]
+            },
+            handleResponse(req, res, 'login')
+        );
+    } else {
+        res.status(405).json({ message: 'Method Not Allowed' });
+    }
 };
 
 export default validate(schema, handler);

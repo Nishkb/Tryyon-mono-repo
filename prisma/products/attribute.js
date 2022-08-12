@@ -2,61 +2,61 @@ import { prisma } from '../prisma';
 
 // create
 export const createAttribute = async (data) => {
-  const attribute = await prisma.attribute.create({ data });
+    const attribute = await prisma.attribute.create({ data });
 
-  return attribute;
+    return attribute;
 };
 
 // read
 export const getAttribute = async ({ id }) => {
-  if (!id) return [];
+    if (!id) return [];
 
-  const attributes = await prisma.attribute.findMany({
-    where: { id }
-  });
+    const attributes = await prisma.attribute.findMany({
+        where: { id }
+    });
 
-  return attributes;
+    return attributes;
 };
 
 export const searchAttribute = async ({ id, query }) => {
-  if (!id && !query) {
-    const attributes = await prisma.attribute.findMany();
-    return attributes;
-  }
+    if (!id && !query) {
+        const attributes = await prisma.attribute.findMany();
+        return attributes;
+    }
 
-  const condition = { OR: [] };
+    const condition = { OR: [] };
 
-  if (id) condition.OR.push({ id });
-  if (query)
-    condition.OR.push({
-      name: {
-        contains: query,
-        mode: 'insensitive'
-      }
+    if (id) condition.OR.push({ id });
+    if (query)
+        condition.OR.push({
+            name: {
+                contains: query,
+                mode: 'insensitive'
+            }
+        });
+
+    const attributes = await prisma.attribute.findMany({
+        where: condition
     });
 
-  const attributes = await prisma.attribute.findMany({
-    where: condition
-  });
-
-  return attributes;
+    return attributes;
 };
 
 // update
 export const updateAttribute = async (id, updateData) => {
-  const attribute = await prisma.attribute.update({
-    where: { id },
-    data: updateData
-  });
+    const attribute = await prisma.attribute.update({
+        where: { id },
+        data: updateData
+    });
 
-  return attribute;
+    return attribute;
 };
 
 // delete
 export const deleteAttribute = async (id) => {
-  const attribute = await prisma.attribute.delete({
-    where: { id }
-  });
+    const attribute = await prisma.attribute.delete({
+        where: { id }
+    });
 
-  return attribute;
+    return attribute;
 };

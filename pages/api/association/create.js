@@ -2,8 +2,8 @@ import async from 'async';
 import Joi from 'joi';
 
 import {
-  getAssociation,
-  createAssociation
+    getAssociation,
+    createAssociation
 } from '../../../prisma/association/association';
 import { prisma } from '../../../prisma/prisma';
 import handleResponse from '../../../utils/helpers/handleResponse';
@@ -12,166 +12,172 @@ import auth from '../../../utils/middlewares/auth';
 import validate from '../../../utils/middlewares/validation';
 
 const schema = {
-  body: Joi.object({
-    userId: Joi.string().optional(),
-    tenantId: Joi.string().required(),
-    approval: Joi.boolean().default(false)
-  })
+    body: Joi.object({
+        userId: Joi.string().optional(),
+        tenantId: Joi.string().required(),
+        approval: Joi.boolean().default(false)
+    })
 };
 
 const handler = async (req, res) => {
-  await runMiddleware(req, res, auth);
-  if (req.method == 'POST') {
-    async.auto(
-      {
-        verify: async () => {
-          // if admin user is trying to make a new Association
-          if (req.admin) {
-            const { userId, tenantId } = req.body;
+    await runMiddleware(req, res, auth);
+    if (req.method == 'POST') {
+        async.auto(
+            {
+                verify: async () => {
+                    // if admin user is trying to make a new Association
+                    if (req.admin) {
+                        const { userId, tenantId } = req.body;
 
-            // userId is needed
-            if (!userId) {
-              throw new Error(
-                JSON.stringify({
-                  errorkey: 'verify',
-                  body: {
-                    status: 409,
-                    data: {
-                      message: 'userId not provided'
+                        // userId is needed
+                        if (!userId) {
+                            throw new Error(
+                                JSON.stringify({
+                                    errorkey: 'verify',
+                                    body: {
+                                        status: 409,
+                                        data: {
+                                            message: 'userId not provided'
+                                        }
+                                    }
+                                })
+                            );
+                        }
+
+                        const associationCheck = await getAssociation({
+                            userId
+                        });
+
+                        // if the user is already having an association
+                        if (associationCheck.length != 0) {
+                            throw new Error(
+                                JSON.stringify({
+                                    errorkey: 'verify',
+                                    body: {
+                                        status: 409,
+                                        data: {
+                                            message:
+                                                'Given user already has an association'
+                                        }
+                                    }
+                                })
+                            );
+                        }
+
+                        const tenant = await prisma.tenant.findMany({
+                            where: {
+                                id: tenantId,
+                                company: {
+                                    ownerId: userId
+                                }
+                            }
+                        });
+
+                        if (tenant.length == 0) {
+                            throw new Error(
+                                JSON.stringify({
+                                    errorkey: 'verify',
+                                    body: {
+                                        status: 409,
+                                        data: {
+                                            message:
+                                                'Given user is not the owner of tenant'
+                                        }
+                                    }
+                                })
+                            );
+                        }
                     }
-                  }
-                })
-              );
-            }
 
-            const associationCheck = await getAssociation({
-              userId
-            });
+                    // if an authenticated user is trying to create an association
+                    if (req.user) {
+                        const { id } = req.user; // userId is not needed to be there in body
+                        const { tenantId, approval } = req.body;
+                        if (approval) delete req.body.approval;
 
-            // if the user is already having an association
-            if (associationCheck.length != 0) {
-              throw new Error(
-                JSON.stringify({
-                  errorkey: 'verify',
-                  body: {
-                    status: 409,
-                    data: {
-                      message: 'Given user already has an association'
+                        const associationCheck = await getAssociation({
+                            userId: id
+                        });
+
+                        // if the user is already having an association
+                        if (associationCheck.length != 0) {
+                            throw new Error(
+                                JSON.stringify({
+                                    errorkey: 'verify',
+                                    body: {
+                                        status: 409,
+                                        data: {
+                                            message:
+                                                'User already has an association'
+                                        }
+                                    }
+                                })
+                            );
+                        }
+
+                        const tenant = await prisma.tenant.findMany({
+                            where: {
+                                id: tenantId,
+                                company: {
+                                    ownerId: id
+                                }
+                            }
+                        });
+
+                        if (tenant.length == 0) {
+                            throw new Error(
+                                JSON.stringify({
+                                    errorkey: 'verify',
+                                    body: {
+                                        status: 409,
+                                        data: {
+                                            message:
+                                                'Given user is not the owner of tenant'
+                                        }
+                                    }
+                                })
+                            );
+                        }
                     }
-                  }
-                })
-              );
-            }
 
-            const tenant = await prisma.tenant.findMany({
-              where: {
-                id: tenantId,
-                company: {
-                  ownerId: userId
-                }
-              }
-            });
+                    return {
+                        message: 'Association validated'
+                    };
+                },
+                create: [
+                    'verify',
+                    async () => {
+                        const { body } = req;
+                        if (!req.admin) body.userId = req.user.id;
+                        const createdAssociation = await createAssociation(
+                            body
+                        );
 
-            if (tenant.length == 0) {
-              throw new Error(
-                JSON.stringify({
-                  errorkey: 'verify',
-                  body: {
-                    status: 409,
-                    data: {
-                      message: 'Given user is not the owner of tenant'
+                        if (createdAssociation)
+                            return {
+                                message: 'New Association Created',
+                                createdAssociation
+                            };
+
+                        throw new Error(
+                            JSON.stringify({
+                                errorkey: 'create',
+                                body: {
+                                    status: 500,
+                                    data: {
+                                        message: 'Internal Server Error'
+                                    }
+                                }
+                            })
+                        );
                     }
-                  }
-                })
-              );
-            }
-          }
-
-          // if an authenticated user is trying to create an association
-          if (req.user) {
-            const { id } = req.user; // userId is not needed to be there in body
-            const { tenantId, approval } = req.body;
-            if (approval) delete req.body.approval;
-
-            const associationCheck = await getAssociation({
-              userId: id
-            });
-
-            // if the user is already having an association
-            if (associationCheck.length != 0) {
-              throw new Error(
-                JSON.stringify({
-                  errorkey: 'verify',
-                  body: {
-                    status: 409,
-                    data: {
-                      message: 'User already has an association'
-                    }
-                  }
-                })
-              );
-            }
-
-            const tenant = await prisma.tenant.findMany({
-              where: {
-                id: tenantId,
-                company: {
-                  ownerId: id
-                }
-              }
-            });
-
-            if (tenant.length == 0) {
-              throw new Error(
-                JSON.stringify({
-                  errorkey: 'verify',
-                  body: {
-                    status: 409,
-                    data: {
-                      message: 'Given user is not the owner of tenant'
-                    }
-                  }
-                })
-              );
-            }
-          }
-
-          return {
-            message: 'Association validated'
-          };
-        },
-        create: [
-          'verify',
-          async () => {
-            const { body } = req;
-            if (!req.admin) body.userId = req.user.id;
-            const createdAssociation = await createAssociation(body);
-
-            if (createdAssociation)
-              return {
-                message: 'New Association Created',
-                createdAssociation
-              };
-
-            throw new Error(
-              JSON.stringify({
-                errorkey: 'create',
-                body: {
-                  status: 500,
-                  data: {
-                    message: 'Internal Server Error'
-                  }
-                }
-              })
-            );
-          }
-        ]
-      },
-      handleResponse(req, res, 'create')
-    );
-  } else {
-    res.status(405).json({ message: 'Method Not Allowed' });
-  }
+                ]
+            },
+            handleResponse(req, res, 'create')
+        );
+    } else {
+        res.status(405).json({ message: 'Method Not Allowed' });
+    }
 };
 
 export default validate(schema, handler);
