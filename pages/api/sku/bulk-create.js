@@ -21,7 +21,7 @@ const schema = {
         categoryIds: Joi.array().required(),
         price: Joi.number().required(),
         discountedPrice: Joi.number().required(),
-        featureImage: Joi.string().optional(),
+        featureImage: Joi.any(),
         gallery: Joi.array().default([])
       })
     )

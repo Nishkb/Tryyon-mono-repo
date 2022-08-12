@@ -34,7 +34,8 @@ const schema = {
       commission: Joi.number().optional().min(0).max(100),
       discount: Joi.number().optional().min(0).max(100)
     }).required(),
-    images: Joi.array().required()
+    featureImage: Joi.any(),
+    gallery: Joi.array().default([])
   })
 };
 
