@@ -62,7 +62,8 @@ model Product {
   marketPlace       Boolean          @default(false)
   ProductImports    ProductImports[]
   reseller          Json?
-  images            String[]
+  featureImage     String?
+  gallery          String[]
 }
 
 model SKU {
