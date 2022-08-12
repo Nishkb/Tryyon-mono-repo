@@ -58,23 +58,23 @@ export default function EditableTable({
                       if (columnsData[idx].type == 'image') {
                         return (
                           <Td key={idx}>
-                            {tableData[index][columnsData[idx].accessor] && (
-                              <Image
-                                w="100px"
-                                src={
-                                  tableData[index][columnsData[idx].accessor]
-                                }
-                                alt="Product Feature Image"
-                              />
-                            )}
                             <FileInput
                               accept="image/*"
                               colorScheme="blue"
                               mt="8px"
+                              urlList={
+                                tableData[index][columnsData[idx].accessor]
+                                  ? [
+                                      tableData[index][
+                                        columnsData[idx].accessor
+                                      ]
+                                    ]
+                                  : []
+                              }
                               onChange={(e) => {
                                 if (e.target.files[0].size > 2097152) {
                                   toast({
-                                    title: `File ${e.target.files[i].name} is too large`,
+                                    title: `File ${e.target.files[0].name} is too large`,
                                     status: 'error',
                                     isClosable: true
                                   });
@@ -145,33 +145,18 @@ export default function EditableTable({
                       if (columnsData[idx].type == 'imageArray') {
                         return (
                           <Td key={idx}>
-                            <Flex gap="4px" maxW="300px" overflowX="scroll">
-                              {Array.isArray(
-                                tableData[index][columnsData[idx].accessor]
-                              ) &&
-                                tableData[index][columnsData[idx].accessor].map(
-                                  (img, j) => {
-                                    console.log(img);
-                                    return (
-                                      <Image
-                                        w="100px"
-                                        key={j}
-                                        src={img}
-                                        alt={
-                                          img.split('/')[
-                                            img.split('/').length - 1
-                                          ]
-                                        }
-                                      />
-                                    );
-                                  }
-                                )}
-                            </Flex>
                             <FileInput
                               accept="image/*"
                               multiple
                               colorScheme="blue"
                               mt="8px"
+                              urlList={
+                                Array.isArray(
+                                  tableData[index][columnsData[idx].accessor]
+                                )
+                                  ? tableData[index][columnsData[idx].accessor]
+                                  : []
+                              }
                               onChange={(e) => {
                                 let flag = false;
 
