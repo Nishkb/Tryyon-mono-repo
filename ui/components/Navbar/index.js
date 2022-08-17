@@ -58,14 +58,17 @@ export default function Navbar({
                 position="fixed"
                 bgColor="transparent"
                 w="100%"
-                maxW={size == 'full' ? '100%' : 'calc(100vw - 300px)'}
+                maxW={{
+                    sm: '100%',
+                    md: size == 'full' ? '100%' : 'calc(100vw - 300px)'
+                }}
                 backdropFilter="blur(2px)"
                 borderRadius="3xl"
                 mt="12px"
                 h="80px"
                 zIndex="10"
             >
-                <Flex direction="column">
+                <Flex direction="column" display={{ sm: 'none', md: 'flex' }}>
                     <Breadcrumb
                         fontSize="12px"
                         fontWeight="500"

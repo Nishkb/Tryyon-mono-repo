@@ -5,7 +5,8 @@ import {
     MdHome,
     MdBarChart,
     MdEditAttributes,
-    MdShoppingBag
+    MdShoppingBag,
+    MdApartment
 } from 'react-icons/md';
 
 const routes = [
@@ -47,6 +48,14 @@ const routes = [
                 height="20px"
                 color="inherit"
             />
+        )
+    },
+    {
+        name: 'Tenants',
+        layout: '/admin',
+        path: '/tenants',
+        icon: (
+            <Icon as={MdApartment} width="20px" height="20px" color="inherit" />
         )
     }
 ];

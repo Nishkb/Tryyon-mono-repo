@@ -14,7 +14,7 @@ export default function FileInput({
 
     return (
         <Flex position="relative" direction="column">
-            {urlList && (
+            {urlList && accept == 'image/*' && (
                 <Flex gap="4px" maxW="300px" overflowX="scroll">
                     {urlList.map((img, j) => {
                         console.log(img, urlList);

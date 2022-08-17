@@ -39,12 +39,21 @@ export const searchTenants = async ({ id, query, adminApproval }) => {
     const condition = {};
 
     if (id) condition.id = id;
-    if (query) condition.name = { contains: query, mode: 'insensitive' };
+    if (query) {
+        condition.OR = [];
+        condition.OR.push({ name: { contains: query, mode: 'insensitive' } });
+        condition.OR.push({
+            company: { name: { contains: query, mode: 'insensitive' } }
+        });
+    }
     if (adminApproval !== undefined)
         condition.adminApproval = adminApproval == 'true';
 
     const tenants = await prisma.tenant.findMany({
-        where: condition
+        where: condition,
+        include: {
+            company: true
+        }
     });
 
     return tenants;

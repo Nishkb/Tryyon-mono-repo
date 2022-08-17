@@ -6,6 +6,7 @@ import auth from '../../../utils/middlewares/auth';
 import aws from 'aws-sdk';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
+import { uuid } from 'uuidv4';
 
 export const config = {
     api: {
@@ -29,7 +30,11 @@ const uploadHandler = multer({
         bucket: `tryyon-files`,
         acl: 'public-read',
         key: (req, file, cb) => {
-            cb(null, `${Date.now().toString()}-${file.originalname}`);
+            let ext =
+                file.originalname.split('.')[
+                    file.originalname.split('.').length - 1
+                ];
+            cb(null, `${uuid()}.${ext}`);
         }
     })
 }).single('image');
