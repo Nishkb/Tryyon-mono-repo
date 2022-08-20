@@ -192,14 +192,18 @@ export default function TableComp(props) {
                                                             }
                                                             cursor="pointer"
                                                         >
-                                                            <Image
-                                                                src={
-                                                                    cell
-                                                                        .value[0]
-                                                                }
-                                                                alt="Product Image"
-                                                                maxW="100px"
-                                                            />
+                                                            {Array.isArray(
+                                                                cell.value
+                                                            ) && (
+                                                                <Image
+                                                                    src={
+                                                                        cell
+                                                                            .value[0]
+                                                                    }
+                                                                    alt="Product Image"
+                                                                    maxW="100px"
+                                                                />
+                                                            )}
                                                         </Flex>
                                                     );
                                                 } else if (

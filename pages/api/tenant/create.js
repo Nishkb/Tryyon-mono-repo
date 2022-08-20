@@ -5,7 +5,7 @@ import { createTenant, getTenant } from '../../../prisma/tenant/tenant';
 import { getCompany } from '../../../prisma/company/company';
 import handleResponse from '../../../utils/helpers/handleResponse';
 import validate from '../../../utils/middlewares/validation';
-import auth from '../../../utils/middlewares/auth';
+import tmpAuth from '../../../utils/middlewares/temporaryAuth';
 import runMiddleware from '../../../utils/helpers/runMiddleware';
 
 const schema = {
@@ -17,7 +17,7 @@ const schema = {
 };
 
 const handler = async (req, res) => {
-    await runMiddleware(req, res, auth);
+    await runMiddleware(req, res, tmpAuth);
     if (req.method == 'POST') {
         async.auto(
             {

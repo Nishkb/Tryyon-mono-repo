@@ -677,6 +677,16 @@ export default function UserProducts() {
                         router.push(`/auth/login?next=${router.pathname}`);
                     }
 
+                    if (res.status == 400) {
+                        toast({
+                            title: res_data.message,
+                            status: 'error',
+                            duration: 2000,
+                            isClosable: true
+                        });
+                        router.push(`/error?message=${res_data.message}`);
+                    }
+
                     if (res.status == 404) {
                         toast({
                             title: res_data.message,
@@ -716,6 +726,16 @@ export default function UserProducts() {
 
                     if (res.status == 403 || res.status == 401) {
                         router.push(`/auth/login?next=${router.pathname}`);
+                    }
+
+                    if (res.status == 400) {
+                        toast({
+                            title: res_data.message,
+                            status: 'error',
+                            duration: 2000,
+                            isClosable: true
+                        });
+                        router.push(`/error?message=${res_data.message}`);
                     }
 
                     if (res.status == 404) {

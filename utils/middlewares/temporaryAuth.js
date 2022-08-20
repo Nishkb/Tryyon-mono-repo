@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 // Checking if the user is an admin or an authenticated user and setting req.admin and/or req.user
-const auth = (req, res, next) => {
+const tmpAuth = (req, res, next) => {
     if (!req.headers['authorization']) {
         return res
             .status(403)
@@ -26,20 +26,9 @@ const auth = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.TOKEN_KEY);
-        console.log(decoded);
-        if (decoded.adminApproval && decoded.email_verified) {
-            isAuthenticatedUser = true;
-            req.user = decoded;
-        } else {
-            if (decoded.adminApproval == false)
-                return res
-                    .status(400)
-                    .json({ message: 'Admin approval pending' });
-            if (decoded.email_verified == false)
-                return res
-                    .status(400)
-                    .json({ message: 'Email verification pending' });
-        }
+        req.user = decoded;
+
+        isAuthenticatedUser = true;
     } catch (err) {
         console.log('Not an authenticated user');
     }
@@ -51,4 +40,4 @@ const auth = (req, res, next) => {
     return next();
 };
 
-export default auth;
+export default tmpAuth;

@@ -271,9 +271,9 @@ function Register() {
                                                     },
                                                     body: fileData
                                                 })
-                                                    .then((res) => {
+                                                    .then(async (res) => {
                                                         if (res.ok) {
-                                                            return res.json();
+                                                            return await res.json();
                                                         }
 
                                                         if (
@@ -281,23 +281,21 @@ function Register() {
                                                             res.status == 403
                                                         ) {
                                                             router.push(
-                                                                `/auth/admin/login?next=${router.pathname}`
+                                                                `/auth/login?next=${router.pathname}`
                                                             );
                                                             throw new Error(
                                                                 JSON.stringify({
                                                                     message:
-                                                                        'Unauthorized Admin'
+                                                                        'Unauthorized User'
                                                                 })
                                                             );
                                                         }
 
-                                                        const err = res.json();
+                                                        const err =
+                                                            await res.json();
 
                                                         throw new Error(
-                                                            JSON.stringify({
-                                                                message:
-                                                                    err.message
-                                                            })
+                                                            err.message
                                                         );
                                                     })
                                                     .then((res) => {
@@ -415,9 +413,9 @@ function Register() {
                                                     },
                                                     body: fileData
                                                 })
-                                                    .then((res) => {
+                                                    .then(async (res) => {
                                                         if (res.ok) {
-                                                            return res.json();
+                                                            return await res.json();
                                                         }
 
                                                         if (
@@ -425,23 +423,21 @@ function Register() {
                                                             res.status == 403
                                                         ) {
                                                             router.push(
-                                                                `/auth/admin/login?next=${router.pathname}`
+                                                                `/auth/login?next=${router.pathname}`
                                                             );
                                                             throw new Error(
                                                                 JSON.stringify({
                                                                     message:
-                                                                        'Unauthorized Admin'
+                                                                        'Unauthorized User'
                                                                 })
                                                             );
                                                         }
 
-                                                        const err = res.json();
+                                                        const err =
+                                                            await res.json();
 
                                                         throw new Error(
-                                                            JSON.stringify({
-                                                                message:
-                                                                    err.message
-                                                            })
+                                                            err.message
                                                         );
                                                     })
                                                     .then((res) => {
@@ -561,9 +557,9 @@ function Register() {
                                                     },
                                                     body: fileData
                                                 })
-                                                    .then((res) => {
+                                                    .then(async (res) => {
                                                         if (res.ok) {
-                                                            return res.json();
+                                                            return await res.json();
                                                         }
 
                                                         if (
@@ -571,23 +567,21 @@ function Register() {
                                                             res.status == 403
                                                         ) {
                                                             router.push(
-                                                                `/auth/admin/login?next=${router.pathname}`
+                                                                `/auth/login?next=${router.pathname}`
                                                             );
                                                             throw new Error(
                                                                 JSON.stringify({
                                                                     message:
-                                                                        'Unauthorized Admin'
+                                                                        'Unauthorized User'
                                                                 })
                                                             );
                                                         }
 
-                                                        const err = res.json();
+                                                        const err =
+                                                            await res.json();
 
                                                         throw new Error(
-                                                            JSON.stringify({
-                                                                message:
-                                                                    err.message
-                                                            })
+                                                            err.message
                                                         );
                                                     })
                                                     .then((res) => {

@@ -26,8 +26,7 @@ export const getUser = async ({
     verificationCode
 }) => {
     if (!username && !email && !phone && !id && !verificationCode) {
-        const users = await prisma.user.findMany();
-        return users;
+        return [];
     }
 
     const query = { OR: [] };
@@ -39,10 +38,43 @@ export const getUser = async ({
     if (verificationCode) query.OR.push({ verificationCode });
 
     const user = await prisma.user.findMany({
-        where: query
+        where: query,
+        include: {
+            company: true
+        }
     });
 
     return user;
+};
+
+export const searchUser = async ({ username, email, phone, id, query }) => {
+    const q = { AND: [] };
+
+    if (username) q.AND.push({ username });
+    if (id) q.AND.push({ id });
+    if (email) q.AND.push({ email });
+    if (phone) q.AND.push({ phone });
+    if (query)
+        q.AND.push({
+            OR: [
+                { firstname: { contains: query, mode: 'insensitive' } },
+                { lastname: { contains: query, mode: 'insensitive' } },
+                { username: { contains: query, mode: 'insensitive' } }
+            ]
+        });
+
+    const users = await prisma.user.findMany({
+        where: q,
+        include: {
+            company: {
+                include: {
+                    tenant: true
+                }
+            }
+        }
+    });
+
+    return users;
 };
 
 // Update User

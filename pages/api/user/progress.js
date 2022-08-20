@@ -5,9 +5,10 @@ import runMiddleware from '../../../utils/helpers/runMiddleware';
 import auth from '../../../utils/middlewares/auth';
 import { getCompany } from '../../../prisma/company/company';
 import { getUser } from '../../../prisma/user/user';
+import tmpAuth from '../../../utils/middlewares/temporaryAuth';
 
 const handler = async (req, res) => {
-    await runMiddleware(req, res, auth);
+    await runMiddleware(req, res, tmpAuth);
     if (!req.user)
         res.status(401).json({ message: 'Not applicable for admin' });
     else if (req.method == 'GET') {

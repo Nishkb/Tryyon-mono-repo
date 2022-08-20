@@ -57,7 +57,11 @@ const handler = async (req, res) => {
                                 {
                                     id: user[0].id,
                                     email: user[0].email,
-                                    role: user[0].role
+                                    role: user[0].role,
+                                    email_verified: user[0].email_verified,
+                                    adminApproval: user[0].company
+                                        ? user[0].company.adminApproval
+                                        : false
                                 },
                                 process.env.TOKEN_KEY,
                                 { expiresIn: '2h' }

@@ -80,6 +80,16 @@ export default function Facet(props) {
                     router.push(`/auth/login?next=${router.pathname}`);
                 }
 
+                if (res.status == 400) {
+                    toast({
+                        title: res_data.message,
+                        status: 'error',
+                        duration: 2000,
+                        isClosable: true
+                    });
+                    router.push(`/error?message=${res_data.message}`);
+                }
+
                 if (res.status == 404) {
                     console.log(res_data.message);
                     toast({
@@ -122,6 +132,16 @@ export default function Facet(props) {
                 if (res.status == 403 || res.status == 401) {
                     // alert('Admin not logged in...');
                     router.push(`/auth/login?next=${router.pathname}`);
+                }
+
+                if (res.status == 400) {
+                    toast({
+                        title: res_data.message,
+                        status: 'error',
+                        duration: 2000,
+                        isClosable: true
+                    });
+                    router.push(`/error?message=${res_data.message}`);
                 }
 
                 if (res.status == 404) {

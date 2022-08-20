@@ -2,7 +2,7 @@ import async from 'async';
 
 import handleResponse from '../../../utils/helpers/handleResponse';
 import runMiddleware from '../../../utils/helpers/runMiddleware';
-import auth from '../../../utils/middlewares/auth';
+import tmpAuth from '../../../utils/middlewares/temporaryAuth';
 import aws from 'aws-sdk';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
@@ -40,7 +40,7 @@ const uploadHandler = multer({
 }).single('image');
 
 const handler = async (req, res) => {
-    await runMiddleware(req, res, auth);
+    await runMiddleware(req, res, tmpAuth);
     await runMiddleware(req, res, uploadHandler);
 
     if (req.method == 'POST') {

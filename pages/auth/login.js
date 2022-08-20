@@ -78,13 +78,11 @@ function Login() {
         fetch('/api/user/progress', {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`
             }
         })
             .then((res) => res.json())
             .then((res) => {
-                // console.log(res);
                 if (res.progress.company && res.progress.tenant) {
                     sessionStorage.setItem('company', 'ok');
                     sessionStorage.setItem('tenant', 'ok');
@@ -100,9 +98,8 @@ function Login() {
                     return res;
                 }
             })
-            // .then((res) => alert(res.message))
             .catch((err) => {
-                console.error(JSON.parse(err.message));
+                console.error(err.message);
             });
     }
 
@@ -164,8 +161,6 @@ function Login() {
                                         setButtonText('User Authenticated');
                                         return res;
                                     } else {
-                                        // sessionStorage.clear();
-                                        // setStatus('error');
                                         toast({
                                             title: `${res.message}`,
                                             status: 'error',
@@ -190,7 +185,7 @@ function Login() {
                                     }
                                 })
                                 .catch((err) => {
-                                    console.error(JSON.parse(err.message));
+                                    console.error(err.message);
                                 });
                         }}
                     >

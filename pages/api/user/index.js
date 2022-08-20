@@ -4,7 +4,7 @@ import handleResponse from '../../../utils/helpers/handleResponse';
 import runMiddleware from '../../../utils/helpers/runMiddleware';
 import auth from '../../../utils/middlewares/auth';
 
-import { getUser } from '../../../prisma/user/user';
+import { searchUser } from '../../../prisma/user/user';
 
 const handler = async (req, res) => {
     await runMiddleware(req, res, auth);
@@ -13,7 +13,7 @@ const handler = async (req, res) => {
         async.auto(
             {
                 main: async () => {
-                    const users = await getUser({});
+                    const users = await searchUser(req.query);
 
                     if (users.length == 0) {
                         throw new Error(

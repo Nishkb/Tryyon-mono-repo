@@ -1,102 +1,54 @@
-import React from 'react';
-import Link from 'next/link';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router.js';
-import { useEffect } from 'react';
 import { useState } from 'react';
 
 import { Formik, Field } from 'formik';
 
 // Chakra imports
 import {
-    Box,
     Button,
     Flex,
     FormControl,
     FormLabel,
-    FormErrorMessage,
-    Heading,
     Icon,
     Input,
     InputGroup,
-    InputRightElement,
     Text,
-    useColorModeValue
+    useToast,
+    useColorModeValue,
+    InputRightElement,
+    useBoolean
 } from '@chakra-ui/react';
 
 // Custom components
-import DefaultAuth from '../../../ui/layouts/auth/Default.js';
+import DefaultAuth from '../../ui/layouts/auth/Default.js';
+import { RiEyeFill } from 'react-icons/ri';
 
-// Assets
-import { MdOutlineRemoveRedEye } from 'react-icons/md';
-import { RiEyeCloseLine } from 'react-icons/ri';
-import { stringify } from 'stylis';
-
-function Register() {
+function ChangePassword() {
     // Chakra color mode
     const textColor = useColorModeValue('navy.700', 'white');
-    const textColorSecondary = 'gray.400';
-    const textColorDetails = useColorModeValue('navy.700', 'secondaryGray.600');
     const brandStars = useColorModeValue('brand.500', 'brand.400');
 
-    const [show, setShow] = useState(false);
-    const [buttonText, setButtonText] = useState('Register');
-    const [dashboard, setDashboard] = useState(0);
-    let router = useRouter();
+    const [buttonText, setButtonText] = useState('Change password');
+    const router = useRouter();
+    const toast = useToast();
+    const [code, setCode] = useState('');
+    const [show, setShow] = useBoolean(false);
 
     useEffect(() => {
-        if (!sessionStorage.userToken) {
-            alert('Login first !');
-            router.push('/auth/login');
-        } else if (
-            sessionStorage.company === 'ok' &&
-            sessionStorage.tenant === 'ok'
-        ) {
-            alert('Tenant already registered !');
-            router.push('/auth/dashboard');
-        } else if (!sessionStorage.company) {
-            alert('Register your company first');
-            router.push('/auth/create/company');
-        }
-        if (dashboard === 1) {
-            sessionStorage.setItem('tenant', 'ok');
-            router.push('/dashboard');
-        }
-    });
+        setCode(router.query.code);
+        console.log(router.query);
+    }, [router]);
 
-    const handleClick = () => setShow(!show);
     return (
-        <DefaultAuth heading="Register your tenant">
+        <DefaultAuth heading="Change password">
             <Flex
                 maxW={{ base: '100%', md: 'max-content' }}
                 w="100%"
                 h="100%"
-                alignItems="start"
-                justifyContent="center"
-                mb={{ base: '30px', md: '60px' }}
-                px={{ base: '25px', md: '0px' }}
-                mt={{ base: '40px', md: '14vh' }}
-                ml="20px"
+                mt="40px"
                 flexDirection="column"
             >
-                <Box me="auto">
-                    <Heading
-                        color={textColor}
-                        fontSize="34px"
-                        mb="2px"
-                        mt="-45px"
-                    >
-                        Register your tenant
-                    </Heading>
-                    <Text
-                        mb="30px"
-                        ms="4px"
-                        color={textColorSecondary}
-                        fontWeight="400"
-                        fontSize="md"
-                    >
-                        Enter the details to register!
-                    </Text>
-                </Box>
                 <Flex
                     zIndex="2"
                     direction="column"
@@ -110,39 +62,62 @@ function Register() {
                 >
                     <Formik
                         initialValues={{
-                            name: '',
-                            description: ''
+                            password: ''
                         }}
                         onSubmit={(values) => {
-                            //   alert(JSON.stringify(values, null, 2));
-                            setButtonText('Registering the tenant...');
-                            fetch('/api/tenant/create', {
+                            setButtonText('Changing password...');
+                            fetch('/api/user/password-change', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
                                     Authorization: `Bearer ${sessionStorage.userToken}`
                                 },
-                                body: JSON.stringify(values, null, 4)
+                                body: JSON.stringify(
+                                    { ...values, code },
+                                    null,
+                                    4
+                                )
                             })
-                                .then((res) => res.json())
-                                .then((res) => {
-                                    if (res.message === 'New Tenant Created') {
-                                        setButtonText('Registered');
-                                        setDashboard(1);
-                                        return res;
-                                    } else {
-                                        alert(res.message);
-                                        setButtonText('Register again');
-                                        throw new Error(
-                                            JSON.stringify({
-                                                message: res.message
-                                            })
+                                .then(async (res) => {
+                                    if (res.ok) {
+                                        setButtonText('Password changed');
+                                        return await res.json();
+                                    }
+
+                                    if (
+                                        res.status == '401' ||
+                                        res.status == '403'
+                                    ) {
+                                        toast({
+                                            title: 'Unauthorized access',
+                                            isClosable: true,
+                                            status: 'error'
+                                        });
+
+                                        router.push(
+                                            '/auth/login?next=/auth/change-password'
                                         );
                                     }
+
+                                    const err = await res.json();
+                                    throw new Error(err.message);
                                 })
-                                .then((res) => alert(res.message))
+                                .then((res) => {
+                                    toast({
+                                        title: res.message,
+                                        status: 'success',
+                                        isClosable: true
+                                    });
+                                    console.log(res);
+                                })
                                 .catch((err) => {
-                                    console.error(JSON.parse(err.message));
+                                    toast({
+                                        title: err.message,
+                                        status: 'error',
+                                        isClosable: true
+                                    });
+                                    console.error(err.message);
+                                    setButtonText('Password Change Failed');
                                 });
                         }}
                     >
@@ -159,27 +134,19 @@ function Register() {
                                         color={textColor}
                                         display="flex"
                                     >
-                                        Tenant Name
+                                        Verification code
                                         <Text color={brandStars}>*</Text>
                                     </FormLabel>
                                     <InputGroup size="md">
                                         <Field
                                             as={Input}
                                             isRequired={true}
-                                            id="name"
-                                            name="name"
+                                            value={code}
                                             fontSize="sm"
                                             mb="2px"
                                             size="md"
                                             variant="auth"
-                                            validate={(value) => {
-                                                let error;
-                                                if (value.length == 0) {
-                                                    error =
-                                                        "Tenant Name can't be an empty string";
-                                                }
-                                                return error;
-                                            }}
+                                            disabled
                                         />
                                     </InputGroup>
                                 </FormControl>
@@ -198,15 +165,16 @@ function Register() {
                                         color={textColor}
                                         display="flex"
                                     >
-                                        Description
+                                        New password
                                         <Text color={brandStars}>*</Text>
                                     </FormLabel>
                                     <InputGroup size="md">
                                         <Field
                                             as={Input}
                                             isRequired={true}
-                                            id="description"
-                                            name="description"
+                                            id="password"
+                                            name="password"
+                                            type={show ? 'text' : 'password'}
                                             fontSize="sm"
                                             mb="2px"
                                             size="md"
@@ -215,11 +183,16 @@ function Register() {
                                                 let error;
                                                 if (value.length == 0) {
                                                     error =
-                                                        "Description can't be empty";
+                                                        "Password can't be empty";
                                                 }
                                                 return error;
                                             }}
                                         />
+                                        <InputRightElement
+                                            onClick={setShow.toggle}
+                                        >
+                                            <RiEyeFill />
+                                        </InputRightElement>
                                     </InputGroup>
                                 </FormControl>
 
@@ -232,7 +205,6 @@ function Register() {
                                         h="37"
                                         mb="8px"
                                         mt="13px"
-                                        ml="75px"
                                         onClick={handleSubmit}
                                     >
                                         {buttonText}
@@ -247,4 +219,4 @@ function Register() {
     );
 }
 
-export default Register;
+export default ChangePassword;

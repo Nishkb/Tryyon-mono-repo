@@ -30,6 +30,21 @@ const handler = async (req, res) => {
                 verification: async () => {
                     if (!req.admin) {
                         // if its a non admin user
+                        if (req.body.adminApproval) {
+                            throw new Error(
+                                JSON.stringify({
+                                    errorkey: 'verification',
+                                    body: {
+                                        status: 404,
+                                        data: {
+                                            message:
+                                                'Not a valid field in request query - "adminApproval"'
+                                        }
+                                    }
+                                })
+                            );
+                        }
+
                         const ownerId = req.user.id;
                         const companyCheck = await getCompany({ ownerId });
 
