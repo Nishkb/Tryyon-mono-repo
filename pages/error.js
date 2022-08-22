@@ -3,28 +3,45 @@ import React from 'react';
 // Assets
 import { useRouter } from 'next/router.js';
 import { WarningIcon } from '@chakra-ui/icons';
-import { Flex, Text } from '@chakra-ui/react';
+import { Button, Flex, Text } from '@chakra-ui/react';
 
 function Error() {
     const router = useRouter();
 
     return (
         <Flex
-            bgColor="red.100"
             maxW="700px"
-            color="red"
             alignItems="center"
             gap="24px"
             rounded="2xl"
-            border="2px solid red"
             mt="20px"
             mx="auto"
             p="20px"
+            pt="25vh"
         >
-            <WarningIcon boxSize="200px" />
-            <Text fontSize="32px" fontWeight="700">
-                {router.query.message}
-            </Text>
+            <WarningIcon color="yellow.300" boxSize="200px" />
+            <Flex direction="column">
+                <Text fontSize="32px" fontWeight="700">
+                    {router.query.message}
+                </Text>
+                {router.query.message == 'Email verification pending' && (
+                    <Button
+                        colorScheme="blue"
+                        w="fit-content"
+                        mt="24px"
+                        onClick={() => {
+                            fetch('/api/user/resend-verification-link', {
+                                method: 'GET',
+                                headers: {
+                                    Authorization: `Bearer ${sessionStorage.userToken}`
+                                }
+                            });
+                        }}
+                    >
+                        Resend verification Link
+                    </Button>
+                )}
+            </Flex>
         </Flex>
     );
 }

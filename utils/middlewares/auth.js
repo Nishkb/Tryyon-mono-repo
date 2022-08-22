@@ -26,19 +26,18 @@ const auth = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.TOKEN_KEY);
-        console.log(decoded);
         if (decoded.adminApproval && decoded.email_verified) {
             isAuthenticatedUser = true;
             req.user = decoded;
         } else {
-            if (decoded.adminApproval == false)
-                return res
-                    .status(400)
-                    .json({ message: 'Admin approval pending' });
             if (decoded.email_verified == false)
                 return res
                     .status(400)
                     .json({ message: 'Email verification pending' });
+            if (decoded.adminApproval == false)
+                return res
+                    .status(400)
+                    .json({ message: 'Admin approval pending' });
         }
     } catch (err) {
         console.log('Not an authenticated user');
