@@ -62,8 +62,8 @@ model Product {
   marketPlace       Boolean          @default(false)
   ProductImports    ProductImports[]
   reseller          Json?
-  featureImage     String?
-  gallery          String[]
+  featureImage      String?
+  gallery           String[]
 }
 
 model SKU {
@@ -119,6 +119,7 @@ model Tenant {
   SKU            SKU[]
   Location       Location[]
   productImports ProductImports[]
+  ApiKey         ApiKey[]
 }
 
 model Company {
@@ -188,4 +189,13 @@ model ProductImports {
   productId String   @db.ObjectId
   status    Boolean  @default(false)
   override  Json
+}
+
+model ApiKey {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  tenantId  String   @db.ObjectId
+  APIKey    String
+  status    Boolean  @default(true)
+  validTill DateTime?
 }
