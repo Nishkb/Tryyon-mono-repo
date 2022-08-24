@@ -12556,6 +12556,1282 @@
 			]
 		},
 		{
+			"name": "API Key",
+			"item": [
+				{
+					"name": "As admin",
+					"item": [
+						{
+							"name": "/api/api-key/create",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var res = JSON.parse(responseBody);",
+											"if(res.message != \"New API Key Created\") { ",
+											"    tests[\"(API Key registration failed) TEST FAILED\"] = res.message == null;",
+											"    return;",
+											"}",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"Response time is less than 2000ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+											"});",
+											"",
+											"pm.environment.set(\"apiKeyId\",res.createdAPIKey.id);",
+											"pm.environment.set(\"apiKey\",res.createdAPIKey.APIKey);",
+											"pm.environment.set(\"apiKeyValidTill\",res.createdAPIKey.validTill);",
+											"pm.environment.set(\"apiKeyTenantId\",res.createdAPIKey.tenantId);",
+											"pm.environment.set(\"apiKeyStatus\",res.createdAPIKey.status);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// {",
+											"//     \"tenantId\": \"{{tenantId}}\",",
+											"//     \"status\": true,",
+											"//     \"validTill\": \"{{$isoTimestamp}}\" // optional",
+											"// }"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"tenantId\": \"{{tenantId}}\",\n    \"status\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/api-key/create",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"api-key",
+										"create"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "/api/api-key/create",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"tenantId\": \"{{tenantId}}\",\n    \"status\": true\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/api-key/create",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"api-key",
+												"create"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "ETag",
+											"value": "\"c8-A2ZcW5QonsRlYxUDX5LZExAF9Vw\""
+										},
+										{
+											"key": "Content-Length",
+											"value": "200"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 24 Aug 2022 06:21:46 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"New API Key Created\",\n    \"createdAPIKey\": {\n        \"id\": \"6305c37971158c7f85f2c493\",\n        \"tenantId\": \"6305c21571158c7f85f2c491\",\n        \"APIKey\": \"319e1001-c83c-4754-8346-65b1329abe4a\",\n        \"status\": true,\n        \"validTill\": null\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "/api/api-key",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/api-key/?status=true",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"api-key",
+										""
+									],
+									"query": [
+										{
+											"key": "isValid",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "/api/api-key",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:3000/api/api-key/?status=true",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"api-key",
+												""
+											],
+											"query": [
+												{
+													"key": "isValid",
+													"value": "true",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "true"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "ETag",
+											"value": "\"373-rP5MIavNNuWLQ5zkTeV237IMzxQ\""
+										},
+										{
+											"key": "Content-Length",
+											"value": "883"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 24 Aug 2022 06:21:59 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"API Keys found\",\n    \"apiKeys\": [\n        {\n            \"id\": \"6305b91771158c7f85f2c48a\",\n            \"tenantId\": \"62b97af7190404e5c50e045d\",\n            \"APIKey\": \"8bffa6e1-4d0f-459b-b66a-f45544b7278c\",\n            \"status\": true,\n            \"validTill\": \"2022-08-24T05:37:26.371Z\"\n        },\n        {\n            \"id\": \"6305b94371158c7f85f2c48b\",\n            \"tenantId\": \"62b97af7190404e5c50e045d\",\n            \"APIKey\": \"dccf2a05-ee38-455d-80ce-682980929fe2\",\n            \"status\": true,\n            \"validTill\": \"2022-08-24T05:38:11.014Z\"\n        },\n        {\n            \"id\": \"6305b97771158c7f85f2c48c\",\n            \"tenantId\": \"62b97af7190404e5c50e045d\",\n            \"APIKey\": \"82feb47b-7490-457f-82e4-8c39d3e00881\",\n            \"status\": true,\n            \"validTill\": \"2022-08-24T05:39:02.809Z\"\n        },\n        {\n            \"id\": \"6305b98371158c7f85f2c48d\",\n            \"tenantId\": \"62b97af7190404e5c50e045d\",\n            \"APIKey\": \"a08c6936-68a9-4deb-9f9e-99822fb02a92\",\n            \"status\": true,\n            \"validTill\": \"2022-08-24T05:39:15.568Z\"\n        },\n        {\n            \"id\": \"6305c37971158c7f85f2c493\",\n            \"tenantId\": \"6305c21571158c7f85f2c491\",\n            \"APIKey\": \"319e1001-c83c-4754-8346-65b1329abe4a\",\n            \"status\": true,\n            \"validTill\": null\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "/api/api-key/update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var res = JSON.parse(responseBody);",
+											"if(res.message != \"API Key updated\") { ",
+											"    tests[\"(API Key updation failed) TEST FAILED\"] = res.message == null;",
+											"    return;",
+											"}",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"Response time is less than 2000ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+											"});",
+											"",
+											"pm.environment.set(\"apiKeyStatus\",res.updatedAPIKey.status);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"id\": \"{{apiKeyId}}\",\n    \"status\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/api-key/update",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"api-key",
+										"update"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "/api/api-key/update",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"{{apiKeyId}}\",\n    \"status\": false\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/api-key/update",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"api-key",
+												"update"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "ETag",
+											"value": "\"c5-lzUvEnJvQZPUj/KhV2fkLHsL+6o\""
+										},
+										{
+											"key": "Content-Length",
+											"value": "197"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 24 Aug 2022 06:22:19 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"API Key updated\",\n    \"updatedAPIKey\": {\n        \"id\": \"6305c37971158c7f85f2c493\",\n        \"tenantId\": \"6305c21571158c7f85f2c491\",\n        \"APIKey\": \"319e1001-c83c-4754-8346-65b1329abe4a\",\n        \"status\": false,\n        \"validTill\": null\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "/api/api-key/delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var res = JSON.parse(responseBody);",
+											"if(res.message != \"apiKey deleted\") { ",
+											"    tests[\"(apiKey deletion failed) TEST FAILED\"] = res.message == null;",
+											"    return;",
+											"}",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"Response time is less than 2000ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"id\": \"{{apiKeyId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/api-key/delete",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"api-key",
+										"delete"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "/api/api-key/delete",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"{{apiKeyId}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/api-key/delete",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"api-key",
+												"delete"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "ETag",
+											"value": "\"c4-VLlHBVdBHoWsUJVslsA7JWJEYSo\""
+										},
+										{
+											"key": "Content-Length",
+											"value": "196"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 24 Aug 2022 06:22:45 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"apiKey deleted\",\n    \"deletedAPIKey\": {\n        \"id\": \"6305c37971158c7f85f2c493\",\n        \"tenantId\": \"6305c21571158c7f85f2c491\",\n        \"APIKey\": \"b0642015-722e-4041-8bdb-d8d5de8a58b8\",\n        \"status\": false,\n        \"validTill\": null\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "/api/api-key/refresh",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var res = JSON.parse(responseBody);",
+											"if(res.message != \"API Key refreshed\") { ",
+											"    tests[\"(API Key refresh failed) TEST FAILED\"] = res.message == null;",
+											"    return;",
+											"}",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"Response time is less than 2000ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+											"});",
+											"",
+											"pm.environment.set(\"apiKey\",res.refreshedAPIKey.APIKey);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"id\": \"{{apiKeyId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/api-key/refresh",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"api-key",
+										"refresh"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "/api/api-key/refresh",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"{{apiKeyId}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/api-key/refresh",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"api-key",
+												"refresh"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "ETag",
+											"value": "\"c9-ReQE56NiS+K0pxMdAlVY4WaOaHE\""
+										},
+										{
+											"key": "Content-Length",
+											"value": "201"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 24 Aug 2022 06:22:31 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"API Key refreshed\",\n    \"refreshedAPIKey\": {\n        \"id\": \"6305c37971158c7f85f2c493\",\n        \"tenantId\": \"6305c21571158c7f85f2c491\",\n        \"APIKey\": \"b0642015-722e-4041-8bdb-d8d5de8a58b8\",\n        \"status\": false,\n        \"validTill\": null\n    }\n}"
+								}
+							]
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{token}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "As user",
+					"item": [
+						{
+							"name": "/api/api-key/create",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var res = JSON.parse(responseBody);",
+											"if(res.message != \"New API Key Created\") { ",
+											"    tests[\"(API Key registration failed) TEST FAILED\"] = res.message == null;",
+											"    return;",
+											"}",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"Response time is less than 2000ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+											"});",
+											"",
+											"pm.environment.set(\"apiKeyId\",res.createdAPIKey.id);",
+											"pm.environment.set(\"apiKey\",res.createdAPIKey.APIKey);",
+											"pm.environment.set(\"apiKeyValidTill\",res.createdAPIKey.validTill);",
+											"pm.environment.set(\"apiKeyTenantId\",res.createdAPIKey.tenantId);",
+											"pm.environment.set(\"apiKeyStatus\",res.createdAPIKey.status);"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// {",
+											"//     \"status\": true,",
+											"//     \"validTill\": \"{{$isoTimestamp}}\" // optional",
+											"// }"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"status\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/api-key/create",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"api-key",
+										"create"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "/api/api-key/create",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"status\": true\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/api-key/create",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"api-key",
+												"create"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "ETag",
+											"value": "\"c8-Cycp+ZTUuPCn2UaTT+QsXIHNHmI\""
+										},
+										{
+											"key": "Content-Length",
+											"value": "200"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 24 Aug 2022 06:20:10 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"New API Key Created\",\n    \"createdAPIKey\": {\n        \"id\": \"6305c31971158c7f85f2c492\",\n        \"tenantId\": \"6305c21571158c7f85f2c491\",\n        \"APIKey\": \"6b44f9e7-ebbf-4b7d-b32e-ddeac25fd439\",\n        \"status\": true,\n        \"validTill\": null\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "/api/api-key",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/api-key/?status=true",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"api-key",
+										""
+									],
+									"query": [
+										{
+											"key": "isValid",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "/api/api-key",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "http://localhost:3000/api/api-key/?status=true",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"api-key",
+												""
+											],
+											"query": [
+												{
+													"key": "isValid",
+													"value": "true",
+													"disabled": true
+												},
+												{
+													"key": "status",
+													"value": "true"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "ETag",
+											"value": "\"bf-QB7PZUHQNldjczk9T8crs9KbFNg\""
+										},
+										{
+											"key": "Content-Length",
+											"value": "191"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 24 Aug 2022 06:20:28 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"API Keys found\",\n    \"apiKeys\": [\n        {\n            \"id\": \"6305c31971158c7f85f2c492\",\n            \"tenantId\": \"6305c21571158c7f85f2c491\",\n            \"APIKey\": \"6b44f9e7-ebbf-4b7d-b32e-ddeac25fd439\",\n            \"status\": true,\n            \"validTill\": null\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "/api/api-key/update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var res = JSON.parse(responseBody);",
+											"if(res.message != \"API Key updated\") { ",
+											"    tests[\"(API Key updation failed) TEST FAILED\"] = res.message == null;",
+											"    return;",
+											"}",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"Response time is less than 2000ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+											"});",
+											"",
+											"pm.environment.set(\"apiKeyStatus\",res.updatedAPIKey.status);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"id\": \"{{apiKeyId}}\",\n    \"status\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/api-key/update",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"api-key",
+										"update"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "/api/api-key/update",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"{{apiKeyId}}\",\n    \"status\": false\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/api-key/update",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"api-key",
+												"update"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "ETag",
+											"value": "\"c5-BUUIl0LwrQkKb6yQFp9UsUTjewg\""
+										},
+										{
+											"key": "Content-Length",
+											"value": "197"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 24 Aug 2022 06:21:01 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"API Key updated\",\n    \"updatedAPIKey\": {\n        \"id\": \"6305c31971158c7f85f2c492\",\n        \"tenantId\": \"6305c21571158c7f85f2c491\",\n        \"APIKey\": \"6b44f9e7-ebbf-4b7d-b32e-ddeac25fd439\",\n        \"status\": false,\n        \"validTill\": null\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "/api/api-key/delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var res = JSON.parse(responseBody);",
+											"if(res.message != \"apiKey deleted\") { ",
+											"    tests[\"(apiKey deletion failed) TEST FAILED\"] = res.message == null;",
+											"    return;",
+											"}",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"Response time is less than 2000ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"id\": \"{{apiKeyId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/api-key/delete",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"api-key",
+										"delete"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "/api/api-key/delete",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"{{apiKeyId}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/api-key/delete",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"api-key",
+												"delete"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "ETag",
+											"value": "\"c4-fPCHlFgFW7JwJImO7KfrnR9LNwo\""
+										},
+										{
+											"key": "Content-Length",
+											"value": "196"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 24 Aug 2022 06:21:31 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"apiKey deleted\",\n    \"deletedAPIKey\": {\n        \"id\": \"6305c31971158c7f85f2c492\",\n        \"tenantId\": \"6305c21571158c7f85f2c491\",\n        \"APIKey\": \"c029a52c-e359-448c-8d5a-80794be2586c\",\n        \"status\": false,\n        \"validTill\": null\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "/api/api-key/refresh",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var res = JSON.parse(responseBody);",
+											"if(res.message != \"API Key refreshed\") { ",
+											"    tests[\"(API Key refresh failed) TEST FAILED\"] = res.message == null;",
+											"    return;",
+											"}",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test(\"Response time is less than 2000ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+											"});",
+											"",
+											"pm.environment.set(\"apiKey\",res.refreshedAPIKey.APIKey);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"id\": \"{{apiKeyId}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/api-key/refresh",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"api-key",
+										"refresh"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "/api/api-key/refresh",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"{{apiKeyId}}\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "http://localhost:3000/api/api-key/refresh",
+											"protocol": "http",
+											"host": [
+												"localhost"
+											],
+											"port": "3000",
+											"path": [
+												"api",
+												"api-key",
+												"refresh"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "ETag",
+											"value": "\"c9-vz0g3ts9EnRzU58UY4rGLc2m0sQ\""
+										},
+										{
+											"key": "Content-Length",
+											"value": "201"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 24 Aug 2022 06:21:17 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": \"API Key refreshed\",\n    \"refreshedAPIKey\": {\n        \"id\": \"6305c31971158c7f85f2c492\",\n        \"tenantId\": \"6305c21571158c7f85f2c491\",\n        \"APIKey\": \"c029a52c-e359-448c-8d5a-80794be2586c\",\n        \"status\": false,\n        \"validTill\": null\n    }\n}"
+								}
+							]
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{userToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
 			"name": "Location",
 			"item": [
 				{
@@ -13806,6 +15082,46 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "/api/upload",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"src": "/home/ankit/Pictures/2560x1440.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"upload"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
