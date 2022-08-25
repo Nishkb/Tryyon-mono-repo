@@ -44,10 +44,29 @@ export default function Navbar({
     const searchBGColor = useColorModeValue('secondaryGray.300', 'navy.900');
     const { colorMode, toggleColorMode } = useColorMode();
     const [isLoggedIn, setLoggedIn] = useState(false);
+    const [breadCrumbs, setBreadCrumbs] = useState([]);
 
     useEffect(() => {
         setLoggedIn(checkLoggedIn());
-    }, []);
+        setBreadCrumbs([router.pathname.split('/')]);
+        setBreadCrumbs(() => {
+            const newArr = [];
+
+            router.pathname.split('/').forEach((e) => {
+                if (newArr.length == 0) {
+                    newArr.push(['HOME', '/']);
+                } else {
+                    if (e != '' && e[0] != '[')
+                        newArr.push([
+                            e.toUpperCase(),
+                            newArr[newArr.length - 1][1] + e + '/'
+                        ]);
+                }
+            });
+
+            return newArr;
+        });
+    }, [router]);
 
     return (
         <Flex mx="auto" position="relative">
@@ -76,42 +95,15 @@ export default function Navbar({
                         color="gray.500"
                         separator={'|'}
                     >
-                        {router.pathname == '/' ? (
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href="#">HOME</BreadcrumbLink>
+                        {breadCrumbs.map((b, idx) => (
+                            <BreadcrumbItem key={idx}>
+                                <BreadcrumbLink
+                                    href={b[1] === router.pathname ? '#' : b[1]}
+                                >
+                                    {b[0]}
+                                </BreadcrumbLink>
                             </BreadcrumbItem>
-                        ) : (
-                            router.pathname.split('/').map((e, idx) => {
-                                if (e == '')
-                                    return (
-                                        <BreadcrumbItem key={idx}>
-                                            <BreadcrumbLink href="/">
-                                                HOME
-                                            </BreadcrumbLink>
-                                        </BreadcrumbItem>
-                                    );
-                                else
-                                    return (
-                                        <BreadcrumbItem key={idx}>
-                                            <BreadcrumbLink
-                                                href={
-                                                    idx ==
-                                                    router.pathname.split('/')
-                                                        .length -
-                                                        1
-                                                        ? '#'
-                                                        : `${router.pathname
-                                                              .split('/')
-                                                              .slice(0, idx)
-                                                              .join('/')}`
-                                                }
-                                            >
-                                                {e.toUpperCase()}
-                                            </BreadcrumbLink>
-                                        </BreadcrumbItem>
-                                    );
-                            })
-                        )}
+                        ))}
                     </Breadcrumb>
                     <Text
                         color={textColor}

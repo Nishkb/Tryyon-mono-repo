@@ -6,7 +6,8 @@ import {
     Text,
     useToast,
     useColorModeValue,
-    Switch
+    Switch,
+    Button
 } from '@chakra-ui/react';
 
 import useDebounce from '../../utils/hooks/useDebounce';
@@ -128,9 +129,21 @@ export default function TenantPage() {
                             >
                                 {currentTenant.name}
                             </Text>
-                            <Text fontSize="14px" mb="24px">
+                            <Text fontSize="14px" mb="16px">
                                 {currentTenant.description}
                             </Text>
+                            <Button
+                                colorScheme="blue"
+                                w="fit-content"
+                                mb="24px"
+                                onClick={() => {
+                                    router.push(
+                                        `/admin/api-key/${currentTenant.id}`
+                                    );
+                                }}
+                            >
+                                Manage API Keys
+                            </Button>
                             <HSeparator />
                             <Text
                                 fontSize="22px"
