@@ -40,7 +40,7 @@ export const searchProducts = async ({
     query,
     inStock,
     published,
-    supplierId,
+    supplierIds,
     attributes,
     priceFrom,
     priceTo,
@@ -83,7 +83,11 @@ export const searchProducts = async ({
     }
 
     if (id) condition._id = { $eq: { $oid: id } };
-    if (supplierId) condition.supplierId = { $eq: { $oid: supplierId } };
+    if (supplierIds) {
+        condition.supplierId = {
+            $in: supplierIds.map((supplierId) => ({ $oid: supplierId }))
+        };
+    }
     if (excludeTenant)
         condition.supplierId = {
             ...condition.supplierId,

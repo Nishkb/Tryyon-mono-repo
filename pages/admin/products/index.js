@@ -145,6 +145,7 @@ export default function ProductPage() {
     const [availableAttributes, setAvailableAttributes] = useState([]);
     const [priceFrom, setPriceFrom] = useState(0);
     const [priceTo, setPriceTo] = useState(0);
+    const [tenants, setTenants] = useState([]);
 
     const debouncedSearchString = useDebounce(searchString, 1500);
     const debouncedCategoryQuery = useDebounce(categoryQuery, 1500);
@@ -458,13 +459,6 @@ export default function ProductPage() {
         setAttributes(attr);
     }, [attributeList]);
 
-    const openCreate = () => {
-        setModalHeading('Create Product');
-        setModalBody('create');
-        setModalFooter('Create');
-        openForm();
-    };
-
     const openEdit = (cells) => {
         setModalHeading('Edit Product');
         setModalBody('edit');
@@ -578,6 +572,10 @@ export default function ProductPage() {
                 query.priceTo = debouncedPriceTo;
             }
 
+            if (tenants.length != 0) {
+                query.supplierIds = tenants;
+            }
+
             console.log(query);
             fetch(`${router.basePath}/api/products`, {
                 method: 'POST',
@@ -640,7 +638,8 @@ export default function ProductPage() {
         debouncedAttributesQuery,
         debouncedCategoryQuery,
         debouncedPriceFrom,
-        debouncedPriceTo
+        debouncedPriceTo,
+        tenants
     ]);
 
     useEffect(() => {
@@ -684,6 +683,9 @@ export default function ProductPage() {
                             ? sessionStorage.adminToken
                             : ''
                     }
+                    tenants={tenants}
+                    setTenants={setTenants}
+                    showTenantSelect
                 />
 
                 <TableComp

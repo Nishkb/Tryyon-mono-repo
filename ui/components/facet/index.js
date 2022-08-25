@@ -16,7 +16,10 @@ import {
     MenuItem,
     VStack,
     Code,
-    Box
+    Box,
+    MenuOptionGroup,
+    MenuItemOption,
+    MenuDivider
 } from '@chakra-ui/react';
 
 import Card from '../card/Card';
@@ -37,13 +40,17 @@ export default function Facet(props) {
         setPriceFrom,
         priceTo,
         setPriceTo,
-        token
+        token,
+        showTenantSelect,
+        tenants,
+        setTenants
     } = props;
 
     const [availableCategories, setAvailableCategories] = useState([]);
     const [attributeFields, setAttributeFields] = useState([0]);
     const [attributeList, setAttributeList] = useState({ 0: ['', ''] });
     const [availableAttributes, setAvailableAttributes] = useState([]);
+    const [availableTenants, setAvailableTenants] = useState([]);
 
     const addCategory = (category, index) => {
         setAvailableCategories((prev) => {
@@ -53,12 +60,6 @@ export default function Facet(props) {
         });
 
         setCategory(category);
-    };
-
-    const removeCategory = (category) => {
-        setAvailableCategories((prev) => [...prev, category]);
-
-        setCategory('');
     };
 
     useEffect(() => {
@@ -169,6 +170,47 @@ export default function Facet(props) {
                     isClosable: true
                 });
             });
+
+        fetch(`${router.basePath}/api/tenant`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(async (res) => {
+                const res_data = await res.json();
+                if (res.ok) {
+                    return res_data;
+                }
+
+                if (res.status == 403 || res.status == 401) {
+                    router.push(`/auth/admin/login?next=${router.pathname}`);
+                }
+
+                if (res.status == 404) {
+                    console.log(res_data.message);
+                    toast({
+                        title: res_data.message,
+                        status: 'error',
+                        duration: 2000,
+                        isClosable: true
+                    });
+                    return { tenants: [] };
+                }
+                throw new Error(res_data.message);
+            })
+            .then((res) => {
+                setAvailableTenants(res.tenants);
+            })
+            .catch((err) => {
+                console.log(err);
+                toast({
+                    title: err.message,
+                    status: 'error',
+                    duration: 2000,
+                    isClosable: true
+                });
+            });
     }, [router, toast, token]);
 
     useEffect(() => {
@@ -192,42 +234,96 @@ export default function Facet(props) {
 
             <Flex>
                 <Flex direction="column">
-                    <Text fontSize="14px" fontWeight={500}>
-                        Categories
-                    </Text>
-                    <Flex>
-                        {category != '' && (
-                            <Tag m="8px" bgColor="blue.500" color="white">
-                                <TagLabel>{category.name}</TagLabel>
-                                <TagCloseButton
-                                    onClick={() => removeCategory(category)}
-                                />
-                            </Tag>
-                        )}
-                    </Flex>
-                    <Menu isLazy mb="8px">
-                        <MenuButton
-                            as={Button}
-                            colorScheme="blue"
-                            my="16px"
-                            fontSize="14px"
-                            py="4px"
-                            rightIcon={<ChevronDownIcon />}
-                        >
-                            Select categories
-                        </MenuButton>
-                        <MenuList maxH="150px" overflowY="scroll">
-                            {availableCategories.map((category, index) => (
-                                <MenuItem
-                                    onClick={() => addCategory(category, index)}
-                                    key={index}
-                                >
-                                    {category.name}
+                    <Flex direction="column">
+                        <Text fontSize="14px" fontWeight={500}>
+                            Category
+                        </Text>
+                        <Menu isLazy mb="8px">
+                            <MenuButton
+                                as={Button}
+                                w="150px"
+                                textAlign="left"
+                                colorScheme="blue"
+                                mt="4px"
+                                mb="8px"
+                                fontSize="14px"
+                                py="4px"
+                                pr="8px"
+                                rightIcon={<ChevronDownIcon />}
+                            >
+                                {!category || category.name == ''
+                                    ? 'Select category'
+                                    : category.name}
+                            </MenuButton>
+                            <MenuList maxH="150px" overflowY="scroll">
+                                <MenuItem onClick={() => setCategory('')}>
+                                    None
                                 </MenuItem>
-                            ))}
-                        </MenuList>
-                    </Menu>
+                                <MenuDivider />
+                                {availableCategories.map((category, index) => (
+                                    <MenuItem
+                                        onClick={() =>
+                                            addCategory(category, index)
+                                        }
+                                        key={index}
+                                    >
+                                        {category.name}
+                                    </MenuItem>
+                                ))}
+                            </MenuList>
+                        </Menu>
+                    </Flex>
+                    {showTenantSelect && (
+                        <Flex direction="column">
+                            <Text fontSize="14px" fontWeight={500}>
+                                Tenants
+                            </Text>
+                            <Flex gap="8px" maxW="200px" wrap="wrap">
+                                {availableTenants
+                                    .filter((t) => tenants.indexOf(t.id) !== -1)
+                                    .map((t) => (
+                                        <Tag colorScheme="blue" key={t.id}>
+                                            <TagLabel>{t.name}</TagLabel>
+                                        </Tag>
+                                    ))}
+                            </Flex>
+                            <Menu isLazy mb="8px" closeOnSelect={false}>
+                                <MenuButton
+                                    as={Button}
+                                    w="150px"
+                                    textAlign="left"
+                                    colorScheme="blue"
+                                    mt="4px"
+                                    fontSize="14px"
+                                    py="4px"
+                                    pr="8px"
+                                    rightIcon={<ChevronDownIcon />}
+                                >
+                                    Select tenants
+                                </MenuButton>
+                                <MenuList maxH="150px" overflowY="scroll">
+                                    <MenuOptionGroup
+                                        type="checkbox"
+                                        onChange={(e) => setTenants(e)}
+                                        value={tenants}
+                                    >
+                                        {availableTenants.map(
+                                            (tenant, index) => (
+                                                <MenuItemOption
+                                                    value={tenant.id}
+                                                    key={index}
+                                                >
+                                                    {tenant.name}
+                                                </MenuItemOption>
+                                            )
+                                        )}
+                                    </MenuOptionGroup>
+                                </MenuList>
+                            </Menu>
+                        </Flex>
+                    )}
                 </Flex>
+
                 <VSeparator mx="24px" />
                 <Flex>
                     <Box>

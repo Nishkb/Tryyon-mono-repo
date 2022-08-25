@@ -11,7 +11,7 @@ const schema = {
         query: Joi.string().optional(),
         inStock: Joi.boolean().optional(),
         published: Joi.boolean().optional(),
-        supplierId: Joi.string().optional(),
+        supplierIds: Joi.array().optional(),
         categoryId: Joi.string().optional(),
         attributes: Joi.object().optional(),
         priceFrom: Joi.number().optional(),

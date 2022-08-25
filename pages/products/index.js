@@ -31,7 +31,12 @@ import {
     MenuItem,
     VStack,
     Code,
-    Box
+    Box,
+    Tabs,
+    TabList,
+    Tab,
+    TabPanels,
+    TabPanel
 } from '@chakra-ui/react';
 
 import { ChevronDownIcon } from '@chakra-ui/icons';
@@ -803,80 +808,76 @@ export default function UserProducts() {
                     }
                 />
 
-                <Text
-                    color={textColor}
-                    fontSize="24px"
-                    fontWeight="700"
-                    lineHeight="100%"
-                    mt="24px"
-                    mb="8px"
-                >
-                    Products
-                </Text>
-                <TableComp
-                    editEntry={openEdit}
-                    deleteEntry={openDelete}
-                    columnsData={columnsData}
-                    tableData={data}
-                    restore_page={page}
-                />
+                <Tabs variant="line" colorScheme="blue" mt="24px">
+                    <TabList>
+                        <Tab>My Products</Tab>
+                        <Tab>Imported Products</Tab>
+                    </TabList>
+                    <TabPanels>
+                        <TabPanel bgColor={bgColor}>
+                            <TableComp
+                                editEntry={openEdit}
+                                deleteEntry={openDelete}
+                                columnsData={columnsData}
+                                tableData={data}
+                                restore_page={page}
+                            />
+                        </TabPanel>
+                        <TabPanel bgColor={bgColor}>
+                            <TableComp
+                                columnsData={ImportsColumnsData}
+                                tableData={importsData}
+                                deleteEntry={(cells) => {
+                                    fetch('/api/product_imports/delete', {
+                                        method: 'DELETE',
+                                        headers: {
+                                            Authorization: `Bearer ${sessionStorage.userToken}`,
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            id: cells[0].value
+                                        })
+                                    })
+                                        .then(async (res) => {
+                                            if (res.ok) {
+                                                return await res.json();
+                                            }
 
-                <Text
-                    color={textColor}
-                    fontSize="24px"
-                    fontWeight="700"
-                    lineHeight="100%"
-                    mt="24px"
-                    mb="8px"
-                >
-                    Product Imports
-                </Text>
-                <TableComp
-                    columnsData={ImportsColumnsData}
-                    tableData={importsData}
-                    deleteEntry={(cells) => {
-                        fetch('/api/product_imports/delete', {
-                            method: 'DELETE',
-                            headers: {
-                                Authorization: `Bearer ${sessionStorage.userToken}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ id: cells[0].value })
-                        })
-                            .then(async (res) => {
-                                if (res.ok) {
-                                    return await res.json();
-                                }
+                                            const err = await res.json();
+                                            throw new Error(err.message);
+                                        })
+                                        .then((res) => {
+                                            toast({
+                                                title: res.message,
+                                                status: 'success',
+                                                isClosable: true
+                                            });
 
-                                const err = await res.json();
-                                throw new Error(err.message);
-                            })
-                            .then((res) => {
-                                toast({
-                                    title: res.message,
-                                    status: 'success',
-                                    isClosable: true
-                                });
+                                            setImportsData((prev) => {
+                                                const newArr = [...prev];
 
-                                setImportsData((prev) => {
-                                    const newArr = [...prev];
+                                                newArr.splice(
+                                                    cells[0].row.index,
+                                                    1
+                                                );
 
-                                    newArr.splice(cells[0].row.index, 1);
+                                                return newArr;
+                                            });
+                                        })
+                                        .catch((err) => {
+                                            toast({
+                                                title: err.message,
+                                                status: 'error',
+                                                isClosable: true
+                                            });
 
-                                    return newArr;
-                                });
-                            })
-                            .catch((err) => {
-                                toast({
-                                    title: err.message,
-                                    status: 'error',
-                                    isClosable: true
-                                });
-
-                                console.error(err.message);
-                            });
-                    }}
-                />
+                                            console.error(err.message);
+                                        });
+                                }}
+                            />
+                        </TabPanel>
+                    </TabPanels>
+                </Tabs>
             </Layout>
             {isOpen && (
                 <Modal
