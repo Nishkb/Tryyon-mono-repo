@@ -84,6 +84,8 @@ model SKU {
   productImportIds String[]         @db.ObjectId
   featureImage     String?
   gallery          String[]
+  Carts            Cart[]           @relation(fields: [cartIds], references: [id])
+  cartIds          String[]         @db.ObjectId
 }
 
 model Category {
@@ -192,10 +194,19 @@ model ProductImports {
 }
 
 model ApiKey {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
-  tenantId  String   @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+  tenantId  String    @db.ObjectId
   APIKey    String
-  status    Boolean  @default(true)
+  status    Boolean   @default(true)
   validTill DateTime?
+}
+
+model Cart {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  uid         String
+  skus        SKU[]    @relation(references: [id], fields: [skuIds])
+  skuIds      String[] @db.ObjectId
+  checkedOut  Boolean  @default(false)
+  lastUpdated DateTime
 }
