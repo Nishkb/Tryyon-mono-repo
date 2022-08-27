@@ -15084,6 +15084,394 @@
 			]
 		},
 		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "/api/cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = JSON.parse(responseBody);",
+									"",
+									"pm.environment.set('uid', res.cart.uid);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/cart",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cart"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "/api/cart",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/cart",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"cart"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "ETag",
+									"value": "\"bc-BrO+bvnLAATlQN8YQGqDKOL6zfA\""
+								},
+								{
+									"key": "Content-Length",
+									"value": "188"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 27 Aug 2022 06:43:47 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"New cart created\",\n    \"cart\": {\n        \"id\": \"6309bd2294a3dd528b231c9e\",\n        \"uid\": \"282df1ae-0b77-4608-a7a9-43bb6027db15\",\n        \"skuIds\": [],\n        \"checkedOut\": false,\n        \"lastUpdated\": \"2022-08-27T06:43:46.984Z\"\n    }\n}"
+						},
+						{
+							"name": "/api/cart",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/api/cart",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"cart"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "ETag",
+									"value": "\"c2-jnyFJa2TqrW3aA5+Pr8aho6R0uE\""
+								},
+								{
+									"key": "Content-Length",
+									"value": "194"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 27 Aug 2022 07:01:39 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Cart found\",\n    \"cart\": [\n        {\n            \"id\": \"6309c14494a3dd528b231ca1\",\n            \"uid\": \"4b55e1c2-caef-46ff-8270-5056ffee1d7d\",\n            \"skuIds\": [],\n            \"checkedOut\": false,\n            \"lastUpdated\": \"2022-08-27T07:01:24.281Z\",\n            \"skus\": []\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "/api/cart/addSKU",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{uid}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"skuIds\": [\"{{skuId}}\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/cart/addSKU",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cart",
+								"addSKU"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "/api/cart/addSKU",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"skuIds\": [\"{{skuId}}\"]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/cart/addSKU",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"cart",
+										"addSKU"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "ETag",
+									"value": "\"266-wD4dHhEN+VLVVILey5ieqN+cD4I\""
+								},
+								{
+									"key": "Content-Length",
+									"value": "614"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 27 Aug 2022 06:58:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"SKUs added\",\n    \"updatedCart\": {\n        \"id\": \"6309bd2294a3dd528b231c9e\",\n        \"uid\": \"282df1ae-0b77-4608-a7a9-43bb6027db15\",\n        \"skuIds\": [\n            \"6309bf6094a3dd528b231ca0\"\n        ],\n        \"checkedOut\": false,\n        \"lastUpdated\": \"2022-08-27T06:58:40.599Z\",\n        \"skus\": [\n            {\n                \"id\": \"6309bf6094a3dd528b231ca0\",\n                \"slug\": \"sit-recusandae-amet\",\n                \"quantity\": 139,\n                \"productId\": \"6309bf5894a3dd528b231c9f\",\n                \"supplierId\": \"6305c21571158c7f85f2c491\",\n                \"published\": true,\n                \"attributes\": {\n                    \"size\": \"l\",\n                    \"color\": \"red\"\n                },\n                \"categoryIds\": [\n                    \"62c010ebd49389ce1fc48ac9\"\n                ],\n                \"price\": 860.97,\n                \"discountedPrice\": 27.48,\n                \"productImportIds\": [],\n                \"featureImage\": null,\n                \"gallery\": [],\n                \"cartIds\": [\n                    \"6309bd2294a3dd528b231c9e\"\n                ]\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "/api/cart/removeSKU",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{uid}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"skuIds\": [\"{{skuId}}\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/cart/removeSKU",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"cart",
+								"removeSKU"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "/api/cart/removeSKU",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"skuIds\": [\"{{skuId}}\"]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/cart/removeSKU",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"cart",
+										"removeSKU"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "ETag",
+									"value": "\"c9-WfXjVA6652E1he+9pkL2Jy8OC9w\""
+								},
+								{
+									"key": "Content-Length",
+									"value": "201"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 27 Aug 2022 07:01:01 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"SKUs removed\",\n    \"updatedCart\": {\n        \"id\": \"6309bd2294a3dd528b231c9e\",\n        \"uid\": \"282df1ae-0b77-4608-a7a9-43bb6027db15\",\n        \"skuIds\": [],\n        \"checkedOut\": false,\n        \"lastUpdated\": \"2022-08-27T07:01:00.613Z\",\n        \"skus\": []\n    }\n}"
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{$guid}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
 			"name": "/api/upload",
 			"request": {
 				"auth": {
